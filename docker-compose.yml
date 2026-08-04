@@ -1,0 +1,269 @@
+version: '3.8'
+
+services:
+  # ============================================================
+  # CORE INFRASTRUCTURE
+  # ============================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: insightflow-postgres
+    environment:
+      POSTGRES_DB: insightflow
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - insightflow-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: insightflow-redis
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - insightflow-network
+
+  # ============================================================
+  # OBSERVABILITY STACK (LGTM - Free/Open Source)
+  # ============================================================
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: insightflow-loki
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./observability/loki-config.yaml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+    ports:
+      - "3100:3100"
+    networks:
+      - insightflow-network
+    depends_on:
+      - promtail
+
+  promtail:
+    image: grafana/promtail:2.9.0
+    container_name: insightflow-promtail
+    volumes:
+      - ./observability/promtail-config.yaml:/etc/promtail/config.yml:ro
+      - /var/log:/var/log:ro
+      - ./backend/logs:/var/log/backend:ro
+    networks:
+      - insightflow-network
+
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: insightflow-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=15d'
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - insightflow-network
+
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: insightflow-grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - ./observability/grafana-dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./observability/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3001:3000"
+    networks:
+      - insightflow-network
+    depends_on:
+      - prometheus
+      - loki
+
+  # ============================================================
+  # AUTHORIZATION (OpenFGA - Free, CNCF)
+  # ============================================================
+  openfga:
+    image: openfga/openfga:v1.5.0
+    container_name: insightflow-openfga
+    environment:
+      - OFGA_LOG_LEVEL=info
+      - OFGA_DATASTORE_ENGINE=memory
+      - OFGA_PLAYGROUND_ENABLED=true
+      - OFGA_HTTP_ADDR=:8080
+      - OFGA_GRPC_ADDR=:8081
+    ports:
+      - "8080:8080"  # HTTP API
+      - "8081:8081"  # gRPC API
+      - "3002:3000"  # Playground UI
+    networks:
+      - insightflow-network
+    healthcheck:
+      test: ["CMD", "grpcurl", "-plaintext", "localhost:8081", "openfga.v1.OpenFGAService/Check"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================
+  # IDENTITY PROVIDER (Keycloak - Free, Open Source)
+  # ============================================================
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    container_name: insightflow-keycloak
+    command: start-dev --http-port=8080 --hostname=localhost
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=dev-file
+      - KC_HOSTNAME=localhost
+      - KC_HTTP_PORT=8080
+      - KC_PROXY=edge
+    volumes:
+      - ./observability/keycloak-realm.json:/opt/keycloak/data/import/realm.json:ro
+      - keycloak_data:/opt/keycloak/data
+    ports:
+      - "8082:8080"
+    networks:
+      - insightflow-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ============================================================
+  # SIEM/LOG EXPORT (OpenSearch - Free, Open Source)
+  # ============================================================
+  opensearch:
+    image: opensearchproject/opensearch:2.11.0
+    container_name: insightflow-opensearch
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - DISABLE_SECURITY_PLUGIN=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    networks:
+      - insightflow-network
+
+  # ============================================================
+  # APPLICATION SERVICES
+  # ============================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: insightflow-backend
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/insightflow
+      REDIS_URL: redis://redis:6379/0
+      ENVIRONMENT: development
+      DEBUG: "true"
+      SECRET_KEY: ${SECRET_KEY:-dev-secret-key-change-in-production-min-32-chars}
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 10080
+      BACKEND_CORS_ORIGINS: '["http://localhost:3000","http://localhost:5173","http://127.0.0.1:3000","http://127.0.0.1:5173"]'
+      # Observability
+      LOKI_URL: http://loki:3100
+      PROMETHEUS_URL: http://prometheus:9090
+      OPENSEARCH_URL: http://opensearch:9200
+      OPENSEARCH_INDEX: insightflow-audit
+      # OpenFGA
+      OPENFGA_STORE_ID: ${OPENFGA_STORE_ID:-}
+      OPENFGA_API_URL: http://openfga:8080
+      # Keycloak
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_REALM: insightflow
+      KEYCLOAK_CLIENT_ID: insightflow-backend
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:-}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/logs:/app/logs
+    networks:
+      - insightflow-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      loki:
+        condition: service_started
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: insightflow-frontend
+    environment:
+      VITE_API_URL: http://localhost:8000/api/v1
+      VITE_KEYCLOAK_URL: http://localhost:8082
+      VITE_KEYCLOAK_REALM: insightflow
+      VITE_KEYCLOAK_CLIENT_ID: insightflow-frontend
+    ports:
+      - "3000:80"
+    networks:
+      - insightflow-network
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # ============================================================
+  # ML MODEL SERVING (Free - Local)
+  # ============================================================
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.9.0
+    container_name: insightflow-mlflow
+    command: mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlartifacts
+    volumes:
+      - mlflow_data:/mlflow
+      - mlartifacts_data:/mlartifacts
+    ports:
+      - "5000:5000"
+    networks:
+      - insightflow-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  loki_data:
+  prometheus_data:
+  grafana_data:
+  keycloak_data:
+  opensearch_data:
+  mlflow_data:
+  mlartifacts_data:
+
+networks:
+  insightflow-network:
+    driver: bridge

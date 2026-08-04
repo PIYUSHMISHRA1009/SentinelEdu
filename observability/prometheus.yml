@@ -1,0 +1,102 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: insightflow-dev
+    environment: development
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+rule_files:
+  - "rules/*.yml"
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Backend application metrics
+  - job_name: insightflow-backend
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['backend:8000']
+        labels:
+          service: backend
+          environment: development
+
+  # Frontend (nginx) metrics
+  - job_name: insightflow-frontend
+    static_configs:
+      - targets: ['frontend:80']
+        labels:
+          service: frontend
+          environment: development
+
+  # PostgreSQL exporter (if running)
+  - job_name: postgres
+    static_configs:
+      - targets: ['postgres:5432']
+        labels:
+          service: postgres
+          environment: development
+
+  # Redis exporter (if running)
+  - job_name: redis
+    static_configs:
+      - targets: ['redis:6379']
+        labels:
+          service: redis
+          environment: development
+
+  # Node exporter for host metrics
+  - job_name: node-exporter
+    static_configs:
+      - targets: ['host.docker.internal:9100']
+        labels:
+          service: node-exporter
+          environment: development
+
+  # cAdvisor for container metrics
+  - job_name: cadvisor
+    static_configs:
+      - targets: ['host.docker.internal:8080']
+        labels:
+          service: cadvisor
+          environment: development
+
+  # Keycloak metrics
+  - job_name: keycloak
+    metrics_path: /realms/insightflow/metrics
+    static_configs:
+      - targets: ['keycloak:8080']
+        labels:
+          service: keycloak
+          environment: development
+
+  # OpenFGA metrics
+  - job_name: openfga
+    static_configs:
+      - targets: ['openfga:8080']
+        labels:
+          service: openfga
+          environment: development
+
+  # Loki metrics
+  - job_name: loki
+    static_configs:
+      - targets: ['loki:3100']
+        labels:
+          service: loki
+          environment: development
+
+  # Prometheus self-monitoring
+  - job_name: prometheus-self
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: prometheus
+          environment: development

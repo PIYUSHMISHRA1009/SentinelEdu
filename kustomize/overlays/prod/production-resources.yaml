@@ -1,0 +1,122 @@
+# Production-specific resources
+
+---
+# Additional production NetworkPolicies
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: insightflow-backend-egress
+  namespace: insightflow-production
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: insightflow-backend
+  policyTypes:
+    - Egress
+  egress:
+    # Allow DNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+    # Allow PostgreSQL
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: postgresql
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Allow Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # Allow Keycloak
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: keycloak
+      ports:
+        - protocol: TCP
+          port: 8080
+    # Allow Vault
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vault
+      ports:
+        - protocol: TCP
+          port: 8200
+    # Allow external HTTPS (for API calls, GeoIP, etc.)
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 443
+
+---
+# Production ResourceQuota
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: insightflow-quota
+  namespace: insightflow-production
+spec:
+  hard:
+    requests.cpu: "16"
+    requests.memory: 32Gi
+    limits.cpu: "32"
+    limits.memory: 64Gi
+    persistentvolumeclaims: "20"
+    services: "10"
+    secrets: "20"
+    configmaps: "10"
+
+---
+# Production LimitRange
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: insightflow-limits
+  namespace: insightflow-production
+spec:
+  limits:
+    - type: Container
+      max:
+        cpu: "4"
+        memory: 8Gi
+      min:
+        cpu: "50m"
+        memory: 64Mi
+      default:
+        cpu: "500m"
+        memory: 1Gi
+      defaultRequest:
+        cpu: "100m"
+        memory: 256Mi
+
+---
+# Production PriorityClass for critical pods
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: insightflow-critical
+value: 1000000
+globalDefault: false
+description: "Priority class for critical InsightFlow components"
+
+---
+# PodSecurityPolicy (if using PSP admission controller)
+# Note: PSP is deprecated in k8s 1.21+, removed in 1.25
+# Use PodSecurity Standards instead
+
+---
+# PodSecurity Standard labels for namespace
+# Apply via: kubectl label namespace insightflow-production pod-security.kubernetes.io/enforce=restricted pod-security.kubernetes.io/audit=restricted pod-security.kubernetes.io/warn=restricted

@@ -1,0 +1,244 @@
+name: Release Automation
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., v1.2.3)'
+        required: true
+        type: string
+      dry_run:
+        description: 'Dry run (no actual release)'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+
+jobs:
+  # ============================================================
+  # BUILD RELEASE ARTIFACTS
+  # ============================================================
+  build:
+    name: Build Release Artifacts
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      changelog: ${{ steps.changelog.outputs.changelog }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/backend:${{ steps.version.outputs.version }}
+            ghcr.io/${{ github.repository }}/backend:latest
+          labels: |
+            org.opencontainers.image.version=${{ steps.version.outputs.version }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+
+      - name: Build and push frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/frontend:${{ steps.version.outputs.version }}
+            ghcr.io/${{ github.repository }}/frontend:latest
+          labels: |
+            org.opencontainers.image.version=${{ steps.version.outputs.version }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+
+      - name: Sign images with Cosign
+        uses: sigstore/cosign-installer@v3
+        with:
+          cosign-release: 'v2.2.0'
+
+      - name: Sign backend image
+        run: |
+          cosign sign --yes ghcr.io/${{ github.repository }}/backend:${{ steps.version.outputs.version }}
+
+      - name: Sign frontend image
+        run: |
+          cosign sign --yes ghcr.io/${{ github.repository }}/frontend:${{ steps.version.outputs.version }}
+
+      - name: Generate changelog
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v4
+        with:
+          fromTag: ${{ github.event.before }}
+          toTag: ${{ steps.version.outputs.version }}
+          configuration: '.github/changelog-config.json'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ============================================================
+  # CREATE GITHUB RELEASE
+  # ============================================================
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{ !github.event.inputs.dry_run }}
+    steps:
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.build.outputs.version }}
+          name: Release ${{ needs.build.outputs.version }}
+          body: ${{ needs.build.outputs.changelog }}
+          draft: false
+          prerelease: ${{ contains(needs.build.outputs.version, '-') }}
+          generate_release_notes: true
+          files: |
+            sbom-backend.spdx.json
+            sbom-frontend.spdx.json
+
+  # ============================================================
+  # UPDATE HELM CHART VERSION
+  # ============================================================
+  update-helm:
+    name: Update Helm Chart Version
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{ !github.event.inputs.dry_run }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update Chart.yaml
+        run: |
+          VERSION="${{ needs.build.outputs.version }}"
+          VERSION_NO_V="${VERSION#v}"
+          sed -i "s/^version: .*/version: $VERSION_NO_V/" helm/insightflow/Chart.yaml
+          sed -i "s/^appVersion: .*/appVersion: $VERSION/" helm/insightflow/Chart.yaml
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.github.com"
+          git add helm/insightflow/Chart.yaml
+          git commit -m "chore: bump chart version to ${{ needs.build.outputs.version }}"
+          git push
+
+  # ============================================================
+  # DEPLOY TO PRODUCTION
+  # ============================================================
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build, release, update-helm]
+    if: ${{ !github.event.inputs.dry_run }}
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ secrets.AWS_ROLE_ARN != '' }}
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Configure GCP credentials
+        uses: google-github-actions/auth@v2
+        if: ${{ secrets.GCP_SA_KEY != '' }}
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up kubectl
+        uses: azure/k8s-set-context@v3
+        with:
+          kubeconfig: ${{ secrets.KUBECONFIG_PRODUCTION }}
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+
+      - name: Blue-Green Deploy
+        run: |
+          VERSION="${{ needs.build.outputs.version }}"
+          helm upgrade --install insightflow-green ./helm/insightflow \
+            --namespace insightflow-green \
+            --create-namespace \
+            --values ./helm/insightflow/values-production.yaml \
+            --set backend.image.tag=$VERSION \
+            --set frontend.image.tag=$VERSION \
+            --wait --timeout 15m
+
+      - name: Verify green deployment
+        run: |
+          kubectl rollout status deployment/insightflow-backend -n insightflow-green --timeout=300s
+          kubectl rollout status deployment/insightflow-frontend -n insightflow-green --timeout=300s
+          curl -f https://green.insightflow.edu/health
+
+      - name: Run smoke tests
+        run: |
+          cd backend
+          pytest tests/smoke/ -v --base-url=https://green.insightflow.edu
+
+      - name: Manual approval for traffic switch
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.token }}
+          approvers: platform-team
+          minimum-approvals: 2
+          issue-title: "Production Release ${{ needs.build.outputs.version }} - Traffic Switch"
+          issue-body: |
+            Green deployment verified for version ${{ needs.build.outputs.version }}.
+            Ready to switch traffic from blue to green?
+            Green URL: https://green.insightflow.edu
+
+      - name: Switch traffic
+        run: |
+          kubectl patch ingress insightflow-ingress -n insightflow-production \
+            -p '{"spec":{"rules":[{"host":"insightflow.edu","http":{"paths":[{"path":"/","pathType":"Prefix","backend":{"service":{"name":"insightflow-frontend-green","port":{"number":80}}}]}}]}}'
+
+      - name: Verify production
+        run: |
+          sleep 30
+          curl -f https://insightflow.edu/health
+
+      - name: Cleanup old namespace
+        run: |
+          kubectl delete namespace insightflow-blue --ignore-not-found=true
+          kubectl label namespace insightflow-green name=insightflow-production --overwrite

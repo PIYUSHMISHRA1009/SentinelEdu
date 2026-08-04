@@ -1,0 +1,98 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: insightflow-staging
+
+resources:
+  - ../../helm/insightflow
+
+commonLabels:
+  environment: staging
+  team: platform
+
+commonAnnotations:
+  environment: staging
+  managed-by: kustomize
+
+# Staging overrides
+patches:
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: insightflow-backend
+      spec:
+        replicas: 2
+        template:
+          spec:
+            containers:
+              - name: backend
+                env:
+                  - name: ENVIRONMENT
+                    value: "staging"
+                resources:
+                  requests:
+                    cpu: "250m"
+                    memory: "512Mi"
+                  limits:
+                    cpu: "1000m"
+                    memory: "1Gi"
+    target:
+      kind: Deployment
+      labelSelector: app.kubernetes.io/name=insightflow-backend
+
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: insightflow-frontend
+      spec:
+        replicas: 2
+        template:
+          spec:
+            containers:
+              - name: frontend
+                resources:
+                  requests:
+                    cpu: "100m"
+                    memory: "128Mi"
+                  limits:
+                    cpu: "500m"
+                    memory: "512Mi"
+    target:
+      kind: Deployment
+      labelSelector: app.kubernetes.io/name=insightflow-frontend
+
+  # Enable autoscaling with lower thresholds for staging
+  - patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: insightflow-backend
+      spec:
+        minReplicas: 2
+        maxReplicas: 5
+        metrics:
+          - type: Resource
+            resource:
+              name: cpu
+              target:
+                type: Utilization
+                averageUtilization: 60
+    target:
+      kind: HorizontalPodAutoscaler
+      labelSelector: app.kubernetes.io/name=insightflow-backend
+
+# Use staging images
+images:
+  - name: ghcr.io/piyushmishra1009/insightflow-edu/backend
+    newTag: staging-latest
+  - name: ghcr.io/piyushmishra1009/insightflow-edu/frontend
+    newTag: staging-latest
+
+# Use production cert-manager issuer
+configMapGenerator:
+  - name: cert-manager-config
+    behavior: merge
+    literals:
+      - DEFAULT_ISSUER=letsencrypt-staging

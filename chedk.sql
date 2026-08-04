@@ -1,0 +1,1 @@
+SELECT * from STUDENT_AUTH;

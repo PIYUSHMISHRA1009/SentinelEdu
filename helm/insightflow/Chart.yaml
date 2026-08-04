@@ -1,0 +1,48 @@
+apiVersion: v2
+name: insightflow
+description: InsightFlow Edu - Enterprise IAM & Analytics Platform
+type: application
+version: 0.1.0
+appVersion: "2.0.0"
+keywords:
+  - iam
+  - analytics
+  - education
+  - identity-governance
+maintainers:
+  - name: Piyush Kumar Mishra
+    email: mishra.piyush827@gmail.com
+    url: https://github.com/PIYUSHMISHRA1009
+dependencies:
+  - name: postgresql
+    version: "12.x.x"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: postgresql.enabled
+  - name: redis
+    version: "18.x.x"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: redis.enabled
+  - name: keycloak
+    version: "20.x.x"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: keycloak.enabled
+  - name: vault
+    version: "0.25.x"
+    repository: "https://helm.releases.hashicorp.com"
+    condition: vault.enabled
+  - name: prometheus
+    version: "25.x.x"
+    repository: "https://prometheus-community.github.io/helm-charts"
+    condition: prometheus.enabled
+  - name: loki
+    version: "6.x.x"
+    repository: "https://grafana.github.io/helm-charts"
+    condition: loki.enabled
+  - name: tempo
+    version: "1.x.x"
+    repository: "https://grafana.github.io/helm-charts"
+    condition: tempo.enabled
+  - name: kube-prometheus-stack
+    version: "55.x.x"
+    repository: "https://prometheus-community.github.io/helm-charts"
+    condition: monitoring.enabled

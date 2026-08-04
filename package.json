@@ -1,0 +1,12 @@
+{
+  "name": "insightflow-edu",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "test": "npm --prefix frontend run test"
+  },
+  "dependencies": {
+    "framer-motion": "^12.23.24"
+  }
+}

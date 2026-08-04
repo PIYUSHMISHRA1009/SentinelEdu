@@ -1,0 +1,91 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: insightflow-dev
+
+resources:
+  - ../../helm/insightflow
+
+commonLabels:
+  environment: dev
+  team: platform
+
+commonAnnotations:
+  environment: development
+  managed-by: kustomize
+
+# Development overrides
+patches:
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: insightflow-backend
+      spec:
+        replicas: 1
+        template:
+          spec:
+            containers:
+              - name: backend
+                env:
+                  - name: DEBUG
+                    value: "true"
+                  - name: ENVIRONMENT
+                    value: "development"
+                resources:
+                  requests:
+                    cpu: "100m"
+                    memory: "256Mi"
+                  limits:
+                    cpu: "500m"
+                    memory: "512Mi"
+    target:
+      kind: Deployment
+      labelSelector: app.kubernetes.io/name=insightflow-backend
+
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: insightflow-frontend
+      spec:
+        replicas: 1
+        template:
+          spec:
+            containers:
+              - name: frontend
+                resources:
+                  requests:
+                    cpu: "50m"
+                    memory: "64Mi"
+                  limits:
+                    cpu: "250m"
+                    memory: "256Mi"
+    target:
+      kind: Deployment
+      labelSelector: app.kubernetes.io/name=insightflow-frontend
+
+  # Disable autoscaling in dev
+  - patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: insightflow-backend
+      spec:
+        minReplicas: 1
+        maxReplicas: 2
+    target:
+      kind: HorizontalPodAutoscaler
+      labelSelector: app.kubernetes.io/name=insightflow-backend
+
+# Use staging images for dev
+images:
+  - name: ghcr.io/piyushmishra1009/insightflow-edu/backend
+    newTag: dev-latest
+  - name: ghcr.io/piyushmishra1009/insightflow-edu/frontend
+    newTag: dev-latest
+
+# Disable some components for dev
+components:
+  - ../components/disable-monitoring.yaml
+  - ../components/disable-vault.yaml

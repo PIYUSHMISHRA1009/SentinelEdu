@@ -1,0 +1,25 @@
+# Build outputs
+target/
+node_modules/
+
+# Sensitive files - DO NOT COMMIT
+*.secret
+*.env
+.env
+.env.local
+application.properties
+*-local.ps1
+setup-local.ps1
+
+# Database credentials and scripts with passwords
+database/setup-local.ps1
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+

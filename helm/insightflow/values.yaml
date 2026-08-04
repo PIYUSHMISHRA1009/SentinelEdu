@@ -1,0 +1,1004 @@
+# Default values for InsightFlow Edu Helm chart
+# This file contains all configurable options with sensible defaults
+
+global:
+  # Global image pull secrets
+  imagePullSecrets: []
+  
+  # Default labels applied to all resources
+  labels:
+    app.kubernetes.io/name: insightflow
+    app.kubernetes.io/managed-by: Helm
+  
+  # Common annotations
+  annotations: {}
+  
+  # Service mesh configuration (Istio/Linkerd)
+  serviceMesh:
+    enabled: false
+    sidecarInject: true
+  
+  # TLS configuration
+  tls:
+    enabled: true
+    secretName: insightflow-tls
+    issuer: letsencrypt-prod
+
+# ============================================================
+# BACKEND SERVICE
+# ============================================================
+backend:
+  enabled: true
+  replicaCount: 2
+  
+  image:
+    repository: ghcr.io/piyushmishra1009/insightflow-edu/backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  
+  imagePullSecrets: []
+  
+  # Resource limits
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+  
+  # Autoscaling
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+    behavior:
+      scaleDown:
+        stabilizationWindowSeconds: 300
+      scaleUp:
+        stabilizationWindowSeconds: 60
+  
+  # Health probes
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: 8000
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: 8000
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+  
+  # Startup probe for slow-starting containers
+  startupProbe:
+    httpGet:
+      path: /health
+      port: 8000
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 30
+  
+  # Environment variables
+  env:
+    - name: ENVIRONMENT
+      value: "production"
+    - name: DEBUG
+      value: "false"
+    - name: API_V1_STR
+      value: "/api/v1"
+    - name: ALGORITHM
+      value: "HS256"
+    - name: ACCESS_TOKEN_EXPIRE_MINUTES
+      value: "10080"
+  
+  # Secret environment variables (populated from Vault via External Secrets)
+  envFromSecrets:
+    - name: DATABASE_URL
+      secretKeyRef:
+        name: insightflow-secrets
+        key: database-url
+    - name: SECRET_KEY
+      secretKeyRef:
+        name: insightflow-secrets
+        key: secret-key
+    - name: BACKEND_CORS_ORIGINS
+      secretKeyRef:
+        name: insightflow-secrets
+        key: cors-origins
+    - name: OPENAI_API_KEY
+      secretKeyRef:
+        name: insightflow-secrets
+        key: openai-api-key
+        optional: true
+  
+  # Service configuration
+  service:
+    type: ClusterIP
+    port: 8000
+    targetPort: 8000
+    annotations: {}
+  
+  # Ingress configuration
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      nginx.ingress.kubernetes.io/rate-limit: "100"
+      nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    hosts:
+      - host: api.insightflow.edu
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: insightflow-api-tls
+        hosts:
+          - api.insightflow.edu
+  
+  # Pod disruption budget
+  pdb:
+    enabled: true
+    minAvailable: 1
+  
+  # Pod security context
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+  
+  # Container security context
+  containerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+  
+  # Volume mounts for read-only root filesystem
+  volumeMounts:
+    - name: tmp
+      mountPath: /tmp
+    - name: var-cache
+      mountPath: /var/cache
+    - name: var-run
+      mountPath: /var/run
+  
+  volumes:
+    - name: tmp
+      emptyDir: {}
+    - name: var-cache
+      emptyDir: {}
+    - name: var-run
+      emptyDir: {}
+
+# ============================================================
+# FRONTEND SERVICE
+# ============================================================
+frontend:
+  enabled: true
+  replicaCount: 2
+  
+  image:
+    repository: ghcr.io/piyushmishra1009/insightflow-edu/frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+  
+  imagePullSecrets: []
+  
+  # Resource limits
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  
+  # Autoscaling
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+  
+  # Health probes
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 80
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 80
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+  
+  # Environment variables
+  env:
+    - name: VITE_API_URL
+      value: "https://api.insightflow.edu/api/v1"
+  
+  # Service configuration
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 80
+    annotations: {}
+  
+  # Ingress configuration
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      nginx.ingress.kubernetes.io/rate-limit: "200"
+    hosts:
+      - host: insightflow.edu
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: insightflow-frontend-tls
+        hosts:
+          - insightflow.edu
+  
+  # Pod disruption budget
+  pdb:
+    enabled: true
+    minAvailable: 1
+  
+  # Security context
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 101
+    runAsGroup: 101
+    fsGroup: 101
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+  
+  containerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 101
+    runAsGroup: 101
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+
+# ============================================================
+# POSTGRESQL (Bitnami)
+# ============================================================
+postgresql:
+  enabled: true
+  
+  auth:
+    username: insightflow
+    database: insightflow
+    # Password comes from secret
+    existingSecret: insightflow-postgresql
+    secretKeys:
+      adminPasswordKey: postgres-password
+      passwordKey: password
+  
+  primary:
+    replicaCount: 1
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 2Gi
+      requests:
+        cpu: 250m
+        memory: 512Mi
+    persistence:
+      enabled: true
+      size: 20Gi
+      storageClass: "fast-ssd"
+    # Backup configuration
+    backup:
+      enabled: true
+      schedule: "0 2 * * *"  # Daily at 2 AM
+      retention: 30
+  
+  # Read replicas for scaling reads
+  readReplicas:
+    replicaCount: 1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+  
+  # Connection pooling with PgBouncer
+  pgbouncer:
+    enabled: true
+    replicaCount: 1
+    resources:
+      limits:
+        cpu: 250m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 64Mi
+
+# ============================================================
+# REDIS (Bitnami)
+# ============================================================
+redis:
+  enabled: true
+  
+  auth:
+    enabled: true
+    existingSecret: insightflow-redis
+    secretKeys:
+      passwordKey: redis-password
+  
+  master:
+    replicaCount: 1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: "fast-ssd"
+  
+  replica:
+    replicaCount: 1
+    resources:
+      limits:
+        cpu: 250m
+        memory: 512Mi
+      requests:
+        cpu: 50m
+        memory: 128Mi
+  
+  # Sentinel for HA
+  sentinel:
+    enabled: true
+    replicaCount: 3
+
+# ============================================================
+# KEYCLOAK (Bitnami)
+# ============================================================
+keycloak:
+  enabled: true
+  
+  auth:
+    adminUser: admin
+    # Admin password from secret
+    existingSecret: insightflow-keycloak
+    secretKeys:
+      adminPasswordKey: admin-password
+  
+  # Realm configuration
+  realm:
+    name: insightflow
+    enabled: true
+    # Realm config will be applied via Keycloak operator or init container
+  
+  # PostgreSQL for Keycloak
+  postgresql:
+    enabled: true
+    auth:
+      username: keycloak
+      database: keycloak
+      existingSecret: insightflow-keycloak-postgresql
+      secretKeys:
+        passwordKey: password
+  
+  # Resources
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 3Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+  
+  # Persistence
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: "fast-ssd"
+  
+  # Ingress
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: auth.insightflow.edu
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: insightflow-keycloak-tls
+        hosts:
+          - auth.insightflow.edu
+  
+  # Proxy headers for ingress
+  proxyHeaders: xforwarded
+
+# ============================================================
+# VAULT (HashiCorp)
+# ============================================================
+vault:
+  enabled: true
+  
+  # Server configuration
+  server:
+    # Use integrated storage (Raft)
+    storage:
+      raft:
+        enabled: true
+        setNodeId: true
+        config: |
+          ui = true
+          
+          listener "tcp" {
+            tls_disable = 1
+            address = "[::]:8200"
+            cluster_address = "[::]:8201"
+          }
+          
+          storage "raft" {
+            path = "/vault/data"
+          }
+          
+          service_registration "kubernetes" {}
+          
+          seal "awskms" {
+            region = "us-east-1"
+            kms_key_id = "arn:aws:kms:us-east-1:123456789012:key/..."
+          }
+    
+    # Auto-unseal with AWS KMS (or GCP KMS)
+    unseal:
+      enabled: true
+      type: awskms
+      config:
+        region: us-east-1
+        kms_key_id: "arn:aws:kms:us-east-1:123456789012:key/..."
+  
+  # Resources
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 250m
+      memory: 1Gi
+  
+  # Persistence
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: "fast-ssd"
+  
+  # Injector for secrets
+  injector:
+    enabled: true
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+  
+  # CSI provider for secret mounting
+  csi:
+    enabled: true
+  
+  # Ingress
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: vault.insightflow.edu
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: insightflow-vault-tls
+        hosts:
+          - vault.insightflow.edu
+
+# ============================================================
+# MONITORING STACK (kube-prometheus-stack)
+# ============================================================
+monitoring:
+  enabled: true
+  
+  # Prometheus
+  prometheus:
+    enabled: true
+    prometheusSpec:
+      replicas: 2
+      retention: 15d
+      retentionSize: 50GiB
+      resources:
+        limits:
+          cpu: 2000m
+          memory: 4Gi
+        requests:
+          cpu: 500m
+          memory: 2Gi
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: fast-ssd
+            resources:
+              requests:
+                storage: 50Gi
+      # ServiceMonitors for our services
+      serviceMonitorSelectorNilUsesHelmValues: false
+      podMonitorSelectorNilUsesHelmValues: false
+      ruleSelectorNilUsesHelmValues: false
+  
+  # Grafana
+  grafana:
+    enabled: true
+    adminUser: admin
+    adminPassword: ""  # From secret
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: "fast-ssd"
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    # Dashboards
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+          - name: 'insightflow'
+            orgId: 1
+            folder: 'InsightFlow'
+            type: file
+            disableDeletion: false
+            updateIntervalSeconds: 10
+            allowUiUpdates: true
+            options:
+              path: /var/lib/grafana/dashboards/insightflow
+    dashboards:
+      default:
+        insightflow-cluster:
+          json: |
+            # Cluster overview dashboard JSON
+            {}
+      insightflow:
+        insightflow-backend:
+          json: |
+            # Backend metrics dashboard JSON
+            {}
+        insightflow-frontend:
+          json: |
+            # Frontend metrics dashboard JSON
+            {}
+        insightflow-business:
+          json: |
+            # Business metrics dashboard JSON
+            {}
+  
+  # Alertmanager
+  alertmanager:
+    enabled: true
+    alertmanagerSpec:
+      replicas: 2
+      resources:
+        limits:
+          cpu: 250m
+          memory: 256Mi
+        requests:
+          cpu: 50m
+          memory: 64Mi
+      storage:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: fast-ssd
+            resources:
+              requests:
+                storage: 5Gi
+    config:
+      global:
+        resolve_timeout: 5m
+      route:
+        group_by: ['alertname', 'cluster', 'service']
+        group_wait: 30s
+        group_interval: 5m
+        repeat_interval: 4h
+        receiver: 'default'
+        routes:
+          - match:
+              severity: critical
+            receiver: 'critical-alerts'
+            continue: true
+          - match:
+              severity: warning
+            receiver: 'warning-alerts'
+      receivers:
+        - name: 'default'
+          email_configs:
+            - to: 'alerts@insightflow.edu'
+              send_resolved: true
+        - name: 'critical-alerts'
+          email_configs:
+            - to: 'critical@insightflow.edu'
+              send_resolved: true
+          pagerduty_configs:
+            - service_key: 'PAGERDUTY_KEY'
+        - name: 'warning-alerts'
+          email_configs:
+            - to: 'warnings@insightflow.edu'
+              send_resolved: true
+  
+  # Node Exporter
+  nodeExporter:
+    enabled: true
+  
+  # Kube State Metrics
+  kubeStateMetrics:
+    enabled: true
+  
+  # Prometheus Operator
+  prometheusOperator:
+    enabled: true
+
+# ============================================================
+# LOKI (Log Aggregation)
+# ============================================================
+loki:
+  enabled: true
+  
+  loki:
+    auth_enabled: false
+    commonConfig:
+      replication_factor: 1
+    schemaConfig:
+      configs:
+        - from: 2024-01-01
+          store: boltdb-shipper
+          object_store: filesystem
+          schema: v11
+          index:
+            prefix: index_
+            period: 24h
+    limitsConfig:
+      retention_period: 30d
+      ingestion_rate_mb: 10
+      ingestion_burst_size_mb: 20
+    chunk_store_config:
+      max_look_back_period: 30d
+    table_manager:
+      retention_deletes_enabled: true
+      retention_period: 30d
+  
+  # Promtail for log collection
+  promtail:
+    enabled: true
+    config:
+      clients:
+        - url: http://loki:3100/loki/api/v1/push
+      positions:
+        filename: /run/promtail/positions.yaml
+      scrape_configs:
+        - job_name: kubernetes-pods
+          kubernetes_sd_configs:
+            - role: pod
+          relabel_configs:
+            - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+              action: keep
+              regex: insightflow-.*
+  
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+
+# ============================================================
+# TEMPO (Distributed Tracing)
+# ============================================================
+tempo:
+  enabled: true
+  
+  tempo:
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 2Gi
+      requests:
+        cpu: 250m
+        memory: 512Mi
+    persistence:
+      enabled: true
+      size: 20Gi
+      storageClass: fast-ssd
+    config:
+      receiver:
+        otlp:
+          protocols:
+            grpc:
+            http:
+      storage:
+        trace:
+          backend: local
+          local:
+            path: /var/tempo/traces
+            pool:
+              max_workers: 100
+              queue_depth: 10000
+      compactor:
+        compaction:
+          block_retention: 7d
+  
+  # OpenTelemetry Collector
+  opentelemetry-collector:
+    enabled: true
+    config:
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+            http:
+      processors:
+        batch:
+        memory_limiter:
+          check_interval: 1s
+          limit_mib: 512
+          spike_limit_mib: 128
+      exporters:
+        tempo:
+          endpoint: tempo:4317
+          tls:
+            insecure: true
+      service:
+        pipelines:
+          traces:
+            receivers: [otlp]
+            processors: [memory_limiter, batch]
+            exporters: [tempo]
+  
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+# ============================================================
+# NETWORK POLICIES
+# ============================================================
+networkPolicies:
+  enabled: true
+  
+  # Default deny all ingress
+  defaultDenyIngress:
+    enabled: true
+  
+  # Allow ingress from ingress controller
+  allowIngressController:
+    enabled: true
+    namespace: ingress-nginx
+  
+  # Allow backend to database
+  allowBackendToDatabase:
+    enabled: true
+  
+  # Allow backend to redis
+  allowBackendToRedis:
+    enabled: true
+  
+  # Allow backend to Keycloak
+  allowBackendToKeycloak:
+    enabled: true
+  
+  # Allow backend to Vault
+  allowBackendToVault:
+    enabled: true
+  
+  # Allow monitoring to scrape
+  allowMonitoring:
+    enabled: true
+    namespace: monitoring
+  
+  # Allow Loki/Promtail
+  allowLoki:
+    enabled: true
+    namespace: monitoring
+  
+  # Allow Tempo
+  allowTempo:
+    enabled: true
+    namespace: monitoring
+
+# ============================================================
+# CERT-MANAGER
+# ============================================================
+certManager:
+  enabled: true
+  
+  installCRDs: true
+  
+  # Cluster issuer for Let's Encrypt
+  clusterIssuers:
+    letsencrypt-prod:
+      email: admin@insightflow.edu
+      server: https://acme-v02.api.letsencrypt.org/directory
+      privateKeySecretRef:
+        name: letsencrypt-prod
+      solvers:
+        - http01:
+            ingress:
+              class: nginx
+    letsencrypt-staging:
+      email: admin@insightflow.edu
+      server: https://acme-staging-v02.api.letsencrypt.org/directory
+      privateKeySecretRef:
+        name: letsencrypt-staging
+      solvers:
+        - http01:
+            ingress:
+              class: nginx
+
+# ============================================================
+# EXTERNAL SECRETS OPERATOR
+# ============================================================
+externalSecrets:
+  enabled: true
+  
+  # ClusterSecretStore for Vault
+  clusterSecretStore:
+    name: vault-backend
+    provider:
+      vault:
+        server: "https://vault.insightflow.edu"
+        path: "secret"
+        version: "v2"
+        auth:
+          kubernetes:
+            mountPath: "kubernetes"
+            role: "insightflow"
+        # TLS config
+        caBundle: ""
+        # namespace: ""  # Optional, for Vault namespaces
+  
+  # ExternalSecret for backend
+  backendSecrets:
+    name: insightflow-backend-secrets
+    target:
+      name: insightflow-secrets
+      creationPolicy: Owner
+    data:
+      - secretKey: database-url
+        remoteRef:
+          key: database/insightflow
+          property: url
+      - secretKey: secret-key
+        remoteRef:
+          key: jwt/insightflow
+          property: secret
+      - secretKey: cors-origins
+        remoteRef:
+          key: cors/insightflow
+          property: origins
+      - secretKey: openai-api-key
+        remoteRef:
+          key: openai/insightflow
+          property: api_key
+  
+  # ExternalSecret for frontend
+  frontendSecrets:
+    name: insightflow-frontend-secrets
+    target:
+      name: insightflow-frontend-secrets
+      creationPolicy: Owner
+    data: []
+  
+  # ExternalSecret for Keycloak
+  keycloakSecrets:
+    name: insightflow-keycloak-secrets
+    target:
+      name: insightflow-keycloak-secrets
+      creationPolicy: Owner
+    data:
+      - secretKey: admin-password
+        remoteRef:
+          key: keycloak/insightflow
+          property: admin_password
+
+# ============================================================
+# ARGOCD APPLICATION
+# ============================================================
+argocd:
+  enabled: true
+  
+  application:
+    name: insightflow
+    namespace: argocd
+    project: default
+    source:
+      repoURL: https://github.com/PIYUSHMISHRA1009/InsightFlow-Edu
+      targetRevision: main
+      path: helm/insightflow
+      helm:
+        valueFiles:
+          - values.yaml
+          - values-production.yaml
+    destination:
+      server: https://kubernetes.default.svc
+      namespace: insightflow-production
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+        allowEmpty: false
+      syncOptions:
+        - CreateNamespace=true
+        - PrunePropagationPolicy=foreground
+        - PruneLast=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 3m
+    ignoreDifferences:
+      - group: apps
+        kind: Deployment
+        jsonPointers:
+          - /spec/replicas
+      - group: ""
+        kind: Secret
+        jsonPointers:
+          - /data

@@ -1,0 +1,191 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: insightflow-production
+
+resources:
+  - ../../helm/insightflow
+
+commonLabels:
+  environment: production
+  team: platform
+
+commonAnnotations:
+  environment: production
+  managed-by: kustomize
+  backup: "enabled"
+
+# Production patches
+patches:
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: insightflow-backend
+      spec:
+        replicas: 3
+        strategy:
+          type: RollingUpdate
+          rollingUpdate:
+            maxSurge: 25%
+            maxUnavailable: 25%
+        template:
+          spec:
+            containers:
+              - name: backend
+                env:
+                  - name: ENVIRONMENT
+                    value: "production"
+                resources:
+                  requests:
+                    cpu: "500m"
+                    memory: "1Gi"
+                  limits:
+                    cpu: "2000m"
+                    memory: "4Gi"
+                # Additional production security
+                securityContext:
+                  runAsNonRoot: true
+                  runAsUser: 1000
+                  runAsGroup: 1000
+                  readOnlyRootFilesystem: true
+                  allowPrivilegeEscalation: false
+                  capabilities:
+                    drop:
+                      - ALL
+    target:
+      kind: Deployment
+      labelSelector: app.kubernetes.io/name=insightflow-backend
+
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: insightflow-frontend
+      spec:
+        replicas: 3
+        strategy:
+          type: RollingUpdate
+          rollingUpdate:
+            maxSurge: 25%
+            maxUnavailable: 25%
+        template:
+          spec:
+            containers:
+              - name: frontend
+                resources:
+                  requests:
+                    cpu: "250m"
+                    memory: "256Mi"
+                  limits:
+                    cpu: "1000m"
+                    memory: "1Gi"
+    target:
+      kind: Deployment
+      labelSelector: app.kubernetes.io/name=insightflow-frontend
+
+  # Production autoscaling - more aggressive
+  - patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: insightflow-backend
+      spec:
+        minReplicas: 3
+        maxReplicas: 20
+        metrics:
+          - type: Resource
+            resource:
+              name: cpu
+              target:
+                type: Utilization
+                averageUtilization: 60
+          - type: Resource
+            resource:
+              name: memory
+              target:
+                type: Utilization
+                averageUtilization: 70
+        behavior:
+          scaleDown:
+            stabilizationWindowSeconds: 300
+            policies:
+              - type: Percent
+                value: 10
+                periodSeconds: 60
+          scaleUp:
+            stabilizationWindowSeconds: 30
+            policies:
+              - type: Percent
+                value: 100
+                periodSeconds: 15
+              - type: Pods
+                value: 4
+                periodSeconds: 15
+            selectPolicy: Max
+    target:
+      kind: HorizontalPodAutoscaler
+      labelSelector: app.kubernetes.io/name=insightflow-backend
+
+  # Pod Disruption Budgets
+  - patch: |-
+      apiVersion: policy/v1
+      kind: PodDisruptionBudget
+      metadata:
+        name: insightflow-backend
+      spec:
+        minAvailable: 2
+        selector:
+          matchLabels:
+            app.kubernetes.io/name: insightflow-backend
+    target:
+      kind: PodDisruptionBudget
+      labelSelector: app.kubernetes.io/name=insightflow-backend
+
+  - patch: |-
+      apiVersion: policy/v1
+      kind: PodDisruptionBudget
+      metadata:
+        name: insightflow-frontend
+      spec:
+        minAvailable: 2
+        selector:
+          matchLabels:
+            app.kubernetes.io/name: insightflow-frontend
+    target:
+      kind: PodDisruptionBudget
+      labelSelector: app.kubernetes.io/name=insightflow-frontend
+
+  # Network policies enabled
+  - patch: |-
+      apiVersion: networking.k8s.io/v1
+      kind: NetworkPolicy
+      metadata:
+        name: insightflow-default-deny
+      spec:
+        podSelector: {}
+        policyTypes:
+          - Ingress
+          - Egress
+    target:
+      kind: NetworkPolicy
+      labelSelector: app.kubernetes.io/name=insightflow-backend
+
+# Production images
+images:
+  - name: ghcr.io/piyushmishra1009/insightflow-edu/backend
+    newTag: prod-latest
+  - name: ghcr.io/piyushmishra1009/insightflow-edu/frontend
+    newTag: prod-latest
+
+# Production cert-manager issuer
+configMapGenerator:
+  - name: cert-manager-config
+    behavior: merge
+    literals:
+      - DEFAULT_ISSUER=letsencrypt-prod
+
+# Production-specific resources
+resources:
+  - ../../helm/insightflow
+  - production-resources.yaml

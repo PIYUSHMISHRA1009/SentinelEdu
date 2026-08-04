@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e293b;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="mint" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="800" height="600" fill="url(#bg)"/>
+  
+  <!-- Dashboard illustration -->
+  <g transform="translate(100, 80)">
+    <!-- Main card -->
+    <rect x="0" y="0" width="600" height="400" rx="20" fill="#1e293b" opacity="0.8"/>
+    
+    <!-- Header -->
+    <rect x="20" y="20" width="560" height="60" rx="10" fill="url(#mint)" opacity="0.2"/>
+    <text x="40" y="58" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#10b981">
+      Student Analytics Dashboard
+    </text>
+    
+    <!-- Charts -->
+    <!-- Bar chart -->
+    <rect x="40" y="120" width="30" height="180" rx="5" fill="#10b981" opacity="0.6"/>
+    <rect x="90" y="150" width="30" height="150" rx="5" fill="#10b981" opacity="0.7"/>
+    <rect x="140" y="100" width="30" height="200" rx="5" fill="#10b981" opacity="0.8"/>
+    <rect x="190" y="130" width="30" height="170" rx="5" fill="#10b981" opacity="0.9"/>
+    
+    <!-- Line chart -->
+    <path d="M 280 200 L 330 160 L 380 180 L 430 140 L 480 150 L 530 120" 
+          stroke="#06b6d4" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <circle cx="280" cy="200" r="6" fill="#06b6d4"/>
+    <circle cx="330" cy="160" r="6" fill="#06b6d4"/>
+    <circle cx="380" cy="180" r="6" fill="#06b6d4"/>
+    <circle cx="430" cy="140" r="6" fill="#06b6d4"/>
+    <circle cx="480" cy="150" r="6" fill="#06b6d4"/>
+    <circle cx="530" cy="120" r="6" fill="#06b6d4"/>
+    
+    <!-- Stats cards -->
+    <rect x="40" y="320" width="150" height="60" rx="8" fill="#10b981" opacity="0.3"/>
+    <text x="60" y="350" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8">Students</text>
+    <text x="60" y="370" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#10b981">1,234</text>
+    
+    <rect x="220" y="320" width="150" height="60" rx="8" fill="#06b6d4" opacity="0.3"/>
+    <text x="240" y="350" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8">At Risk</text>
+    <text x="240" y="370" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#f59e0b">32</text>
+    
+    <rect x="400" y="320" width="150" height="60" rx="8" fill="#10b981" opacity="0.3"/>
+    <text x="420" y="350" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8">Avg GPA</text>
+    <text x="420" y="370" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#10b981">3.4</text>
+  </g>
+  
+  <!-- Decorative elements -->
+  <circle cx="700" cy="100" r="60" fill="#10b981" opacity="0.1"/>
+  <circle cx="100" cy="500" r="80" fill="#06b6d4" opacity="0.1"/>
+</svg>
