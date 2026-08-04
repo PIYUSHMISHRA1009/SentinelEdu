@@ -135,3 +135,4 @@ const PublicLayout: React.FC = () => (
 );
 
 export { ProtectedRoute, Layout, PublicLayout };
+export default Layout;
