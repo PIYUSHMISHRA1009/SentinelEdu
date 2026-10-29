@@ -84,3 +84,7 @@ venv/
 .env
 *.egg-info/
 *.egg
+
+backend/.coverage
+
+backend/.coverage

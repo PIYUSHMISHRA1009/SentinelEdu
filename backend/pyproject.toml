@@ -1,0 +1,9 @@
+[tool.ruff]
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["E501", "UP"]
+
+[tool.black]
+target-version = ["py39"]
