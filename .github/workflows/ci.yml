@@ -87,24 +87,18 @@ jobs:
           sleep 5
           pg_isready -h localhost -p 5432 -U postgres
 
-      - name: Run migrations
-        run: |
-          cd backend
-          DATABASE_URL=postgresql://postgres:postgres@localhost:5432/insightflow_test python -c "
-          from app.db.session import init_db
-          init_db()
-          print('Migrations complete')
-          "
-
-      - name: Load sample data
-        run: |
-          cd backend
-          DATABASE_URL=postgresql://postgres:postgres@localhost:5432/insightflow_test python scripts/init_db.py
-
       - name: Run tests
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/insightflow_test
+          SECRET_KEY: ci-test-secret-key
         run: |
           cd backend
-          DATABASE_URL=postgresql://postgres:postgres@localhost:5432/insightflow_test pytest tests/ -v --cov=app --cov-report=xml --cov-report=term-missing
+          python -m pytest tests -q --cov=app
+
+      - name: Generate coverage report
+        run: |
+          cd backend
+          python -m coverage xml
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4
