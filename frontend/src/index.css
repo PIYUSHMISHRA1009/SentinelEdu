@@ -2,61 +2,59 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --color-primary: #2563eb;
-  --color-primary-dark: #1d4ed8;
-  --color-secondary: #64748b;
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
-  --color-critical: #dc2626;
+@layer base {
+  body {
+    @apply font-sans bg-[#faf9f6] text-slate-900 antialiased selection:bg-slate-900 selection:text-white;
+  }
+
+  h1, h2, h3, .font-editorial {
+    @apply font-serif tracking-tight;
+  }
 }
 
-body {
-  @apply bg-gray-50 text-gray-900 antialiased;
-}
-
-* {
-  @apply border-gray-200;
-}
-
-/* Custom scrollbar */
+/* Custom scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  @apply bg-gray-100;
+  background: #f1ede4;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 rounded-full hover:bg-gray-400;
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
-/* Chart container */
+/* Recharts responsiveness */
 .recharts-wrapper {
   width: 100% !important;
   height: 100% !important;
 }
 
-/* Risk level badges */
-.badge-low { @apply bg-green-100 text-green-800; }
-.badge-medium { @apply bg-yellow-100 text-yellow-800; }
-.badge-high { @apply bg-orange-100 text-orange-800; }
-.badge-critical { @apply bg-red-100 text-red-800; }
-
-/* Animations */
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Subtle micro-animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
+
 .animate-fade-in {
-  animation: fade-in 0.3s ease-out;
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-@keyframes pulse-soft {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+/* Academic Rule Dividers */
+.academic-rule {
+  @apply border-b border-stone-200/80 my-6;
 }
-.animate-pulse-soft {
-  animation: pulse-soft 2s ease-in-out infinite;
+
+.academic-rule-thick {
+  @apply border-b-2 border-slate-900 my-6;
 }

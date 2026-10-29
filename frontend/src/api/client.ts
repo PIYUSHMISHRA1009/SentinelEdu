@@ -169,6 +169,54 @@ class ApiClient {
     const response = await this.client.get(`/risk/student/${studentId}/trends`, { params: { class_id: classId } });
     return response.data;
   }
+
+  // Analytics endpoints
+  async getAnalyticsSummary() {
+    const response = await this.client.get('/analytics/summary');
+    return response.data;
+  }
+
+  async getDepartmentPerformance() {
+    const response = await this.client.get('/analytics/department-performance');
+    return response.data;
+  }
+
+  async getClassPerformance() {
+    const response = await this.client.get('/analytics/class-performance');
+    return response.data;
+  }
+
+  async getGpaDistribution() {
+    const response = await this.client.get('/analytics/gpa-distribution');
+    return response.data;
+  }
+
+  async getAttendanceVsGpa() {
+    const response = await this.client.get('/analytics/attendance-vs-gpa');
+    return response.data;
+  }
+
+  async getDecliningStudents(limit?: number) {
+    const response = await this.client.get('/analytics/declining-students', { params: { limit } });
+    return response.data;
+  }
+
+  async getInterventionPriority(limit?: number) {
+    const response = await this.client.get('/analytics/intervention-priority', { params: { limit } });
+    return response.data;
+  }
+
+  async getRiskDistribution() {
+    const response = await this.client.get('/analytics/risk-distribution');
+    return response.data;
+  }
+
+  // Data quality endpoint
+  async getDataQualityReport() {
+    const response = await this.client.get('/data-quality/report');
+    return response.data;
+  }
+
 }
 
 export const api = new ApiClient();
