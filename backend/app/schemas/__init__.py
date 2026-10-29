@@ -1,7 +1,8 @@
 from datetime import datetime
-from typing import Optional, List
-from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from enum import Enum
+from typing import List, Optional, Union
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class UserRole(str, Enum):
@@ -32,7 +33,7 @@ class UserResponse(UserBase):
     id: int
     created_at: datetime
     updated_at: datetime
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -74,7 +75,7 @@ class ClassResponse(ClassBase):
     teacher_name: Optional[str] = None
     created_at: datetime
     updated_at: datetime
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -92,7 +93,7 @@ class EnrollmentResponse(BaseModel):
     class_code: Optional[str] = None
     enrolled_at: datetime
     is_active: bool
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -125,7 +126,7 @@ class GradeResponse(GradeBase):
     percentage: float
     graded_at: datetime
     created_at: datetime
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -159,7 +160,7 @@ class AttendanceResponse(AttendanceBase):
     class_code: Optional[str] = None
     date: datetime
     recorded_at: datetime
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -176,7 +177,7 @@ class RiskAssessmentBase(BaseModel):
     risk_level: RiskLevel
     gpa_trend: Optional[float] = None
     attendance_trend: Optional[float] = None
-    factors: Optional[str] = None
+    factors: Optional[Union[str, List[str]]] = None
 
 
 class RiskAssessmentCreate(RiskAssessmentBase):
@@ -191,7 +192,9 @@ class RiskAssessmentResponse(RiskAssessmentBase):
     class_id: Optional[int] = None
     class_code: Optional[str] = None
     assessed_at: datetime
-    
+    features: Optional[dict] = None
+    intervention: Optional[dict] = None
+
     model_config = ConfigDict(from_attributes=True)
 
 

@@ -1,16 +1,15 @@
-from typing import Generator, Optional
+from typing import Optional
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import jwt
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.security import decode_token
-from app.db.session import get_db
 from app.db.models import User, UserRole
+from app.db.session import get_db
 from app.schemas import TokenData
-
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
 
@@ -26,7 +25,7 @@ def get_current_user(
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     token_data = TokenData(**payload)
     user = db.query(User).filter(User.id == token_data.user_id).first()
     if not user:
@@ -52,6 +51,7 @@ def require_role(*allowed_roles: UserRole):
                 detail="Not enough permissions",
             )
         return current_user
+
     return role_checker
 
 
