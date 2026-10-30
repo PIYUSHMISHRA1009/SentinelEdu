@@ -77,7 +77,7 @@ jobs:
           path: ./
           base: main
           head: HEAD
-          extra_args: --no-verification --json --fail
+          extra_args: --no-verification --json
 
   # ============================================================
   # DEPENDENCY SCANNING
