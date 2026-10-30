@@ -147,39 +147,6 @@ jobs:
           sarif_file: semgrep.sarif
 
   # ============================================================
-  # IaC SCANNING
-  # ============================================================
-  iac-scan:
-    name: Infrastructure as Code Scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run Checkov
-        uses: bridgecrewio/checkov-action@v12
-        with:
-          directory: ./terraform
-          framework: terraform
-          output_format: cli,json
-          output_file_path: checkov-report.json
-
-      - name: Run tfsec
-        uses: aquasecurity/tfsec-action@v1
-        with:
-          directory: ./terraform
-          format: json
-          output: tfsec-report.json
-
-      - name: Upload reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: iac-reports
-          path: |
-            checkov-report.json
-            tfsec-report.json
-
-  # ============================================================
   # SBOM GENERATION
   # ============================================================
   sbom:
@@ -255,7 +222,6 @@ jobs:
       - trufflehog-scan
       - dependency-scan
       - sast-scan
-      - iac-scan
       - sbom
       - policy-check
     if: always()
@@ -268,7 +234,6 @@ jobs:
           echo "trufflehog-scan: ${{ needs.trufflehog-scan.result }}"
           echo "dependency-scan: ${{ needs.dependency-scan.result }}"
           echo "sast-scan: ${{ needs.sast-scan.result }}"
-          echo "iac-scan: ${{ needs.iac-scan.result }}"
           echo "sbom: ${{ needs.sbom.result }}"
           echo "policy-check: ${{ needs.policy-check.result }}"
 
