@@ -3,9 +3,26 @@ import { useQuery } from '@tanstack/react-query';
 import api from '../api/client';
 import { PageHeader } from '../components/academic/PageHeader';
 import { MetricCard } from '../components/academic/MetricCard';
-import { RiskBadge, PriorityBadge } from '../components/academic/StatusBadges';
+import { PriorityBadge } from '../components/academic/StatusBadges';
 import { StudentDetailModal } from '../components/academic/StudentDetailModal';
 import { User, Class } from '../types';
+
+interface InterventionPriorityItem {
+  student_id: number;
+  student_name: string;
+  department: string | null;
+  gpa: number | null;
+  attendance: number | null;
+  priority: string;
+}
+
+interface DecliningStudent {
+  student_id: number;
+  student_name: string;
+  decline_amount?: number;
+  recent_avg?: number;
+  older_avg?: number;
+}
 
 export default function FacultyDashboard() {
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null);
@@ -26,12 +43,12 @@ export default function FacultyDashboard() {
     queryFn: () => api.getClasses(),
   });
 
-  const { data: priorityList = [], isLoading: loadingPriority } = useQuery({
+  const { data: priorityList = [], isLoading: loadingPriority } = useQuery<InterventionPriorityItem[]>({
     queryKey: ['facultyPriority'],
     queryFn: () => api.getInterventionPriority(20),
   });
 
-  const { data: decliningList = [], isLoading: loadingDeclining } = useQuery({
+  const { data: decliningList = [], isLoading: loadingDeclining } = useQuery<DecliningStudent[]>({
     queryKey: ['facultyDeclining'],
     queryFn: () => api.getDecliningStudents(10),
   });
@@ -52,7 +69,7 @@ export default function FacultyDashboard() {
     );
   }
 
-  const filteredPriority = priorityList.filter((s: any) =>
+  const filteredPriority = priorityList.filter((s) =>
     s.student_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.department?.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -172,7 +189,7 @@ export default function FacultyDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-stone-100">
-                {filteredPriority.map((item: any, i: number) => (
+                {filteredPriority.map((item, i) => (
                   <tr
                     key={item.student_id || i}
                     className="hover:bg-stone-50/80 transition-colors cursor-pointer"
@@ -229,7 +246,7 @@ export default function FacultyDashboard() {
               </p>
             ) : (
               <div className="space-y-3">
-                {decliningList.map((st: any, idx: number) => (
+                {decliningList.map((st, idx) => (
                   <div
                     key={idx}
                     onClick={() => setSelectedStudentId(st.student_id)}

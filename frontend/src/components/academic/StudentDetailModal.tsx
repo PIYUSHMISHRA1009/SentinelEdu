@@ -10,6 +10,17 @@ interface StudentDetailModalProps {
   onClose: () => void;
 }
 
+interface TrendChartPoint {
+  date?: string;
+  gpa?: number;
+  score?: number;
+}
+
+interface StudentTrendChartData {
+  gpa_history?: TrendChartPoint[];
+  attendance_history?: Array<{ attendance_rate?: number }>;
+}
+
 export const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
   studentId,
   studentName,
@@ -21,7 +32,7 @@ export const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
     enabled: !!studentId,
   });
 
-  const { data: trendData, isLoading: loadingTrends } = useQuery({
+  const { data: trendData, isLoading: loadingTrends } = useQuery<StudentTrendChartData>({
     queryKey: ['studentTrendsDetail', studentId],
     queryFn: () => api.getStudentTrends(studentId!),
     enabled: !!studentId,
@@ -32,7 +43,7 @@ export const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
   const isLoading = loadingRisk || loadingTrends;
 
   // Format trend points for chart if available
-  const chartPoints = trendData?.gpa_history?.map((pt: any, idx: number) => ({
+  const chartPoints = trendData?.gpa_history?.map((pt, idx) => ({
     session: pt.date || `P${idx + 1}`,
     gpa: pt.gpa || pt.score || 0,
     attendance: trendData?.attendance_history?.[idx]?.attendance_rate || 85,

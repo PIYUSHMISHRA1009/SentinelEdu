@@ -5,7 +5,19 @@ import { PageHeader } from '../components/academic/PageHeader';
 import { MetricCard } from '../components/academic/MetricCard';
 import { RiskBadge, PriorityBadge } from '../components/academic/StatusBadges';
 import { StudentDetailModal } from '../components/academic/StudentDetailModal';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+interface InterventionPriorityItem {
+  student_id: number;
+  student_name: string;
+  department: string | null;
+  gpa: number | null;
+  attendance: number | null;
+  risk_score: number;
+  risk_level: string;
+  priority: string;
+  rank: number;
+}
 
 export default function AdminDashboard() {
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null);
@@ -21,7 +33,7 @@ export default function AdminDashboard() {
     queryFn: () => api.getDepartmentPerformance(),
   });
 
-  const { data: riskDist = [], isLoading: loadingRisk } = useQuery({
+  const { isLoading: loadingRisk } = useQuery({
     queryKey: ['adminRiskDist'],
     queryFn: () => api.getRiskDistribution(),
   });
@@ -31,7 +43,7 @@ export default function AdminDashboard() {
     queryFn: () => api.getDataQualityReport(),
   });
 
-  const { data: priorityList = [], isLoading: loadingPriority } = useQuery({
+  const { data: priorityList = [], isLoading: loadingPriority } = useQuery<InterventionPriorityItem[]>({
     queryKey: ['adminPriorityList'],
     queryFn: () => api.getInterventionPriority(20),
   });
@@ -52,7 +64,7 @@ export default function AdminDashboard() {
     );
   }
 
-  const filteredPriority = priorityList.filter((s: any) =>
+  const filteredPriority = priorityList.filter((s) =>
     s.student_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.department?.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -206,7 +218,7 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
-              {filteredPriority.map((item: any, i: number) => (
+              {filteredPriority.map((item, i) => (
                 <tr
                   key={item.student_id || i}
                   className="hover:bg-stone-50/80 transition-colors cursor-pointer"

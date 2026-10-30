@@ -4,8 +4,26 @@ import api from '../api/client';
 import { PageHeader } from '../components/academic/PageHeader';
 import { MetricCard } from '../components/academic/MetricCard';
 
+interface DataQualitySummary {
+  total_records_checked: number;
+  valid_records: number;
+  issues_found: number;
+  check_timestamp: string;
+}
+
+interface DataQualityCategory {
+  category: string;
+  issue_count: number;
+  details: string[];
+}
+
+interface DataQualityReport {
+  summary: DataQualitySummary;
+  categories: DataQualityCategory[];
+}
+
 export default function DataQualityPage() {
-  const { data: report, isLoading, error } = useQuery({
+  const { data: report, isLoading, error } = useQuery<DataQualityReport>({
     queryKey: ['dataQualityReport'],
     queryFn: () => api.getDataQualityReport(),
   });
@@ -37,7 +55,7 @@ export default function DataQualityPage() {
     );
   }
 
-  const summary = report?.summary || {};
+  const summary: Partial<DataQualitySummary> = report?.summary || {};
   const categories = report?.categories || [];
 
   const totalChecked = summary.total_records_checked || 0;
@@ -104,7 +122,7 @@ export default function DataQualityPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {categories.map((cat: any, idx: number) => {
+            {categories.map((cat, idx) => {
               const hasIssues = cat.issue_count > 0;
               return (
                 <div
