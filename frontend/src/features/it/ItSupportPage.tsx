@@ -37,7 +37,9 @@ export const ItSupportPage: React.FC = () => {
 
   const supportReply = useMutation({
     mutationFn: async (args: { id: number; message: string }) => {
-      const res = await axiosClient.post<ApiResponse<any>>(API_ENDPOINTS.SUPPORT_REPLY(args.id), { message: args.message });
+      const res = await axiosClient.post<ApiResponse<any>>(API_ENDPOINTS.SUPPORT_REPLY(args.id), {
+        message: args.message,
+      });
       return res.data;
     },
     onSuccess: (res) => {
@@ -86,7 +88,9 @@ export const ItSupportPage: React.FC = () => {
     onError: (err: any) => addToast(err.message || 'Failed to save response', 'error'),
   });
 
-  const activeTicketCount = (supportTickets || []).filter((ticket: any) => ticket.status !== 'resolved').length;
+  const activeTicketCount = (supportTickets || []).filter(
+    (ticket: any) => ticket.status !== 'resolved'
+  ).length;
 
   // Sort and paginate support tickets
   const sortedSupport = (supportTickets || [])
@@ -99,13 +103,11 @@ export const ItSupportPage: React.FC = () => {
   const visibleSupport = sortedSupport.slice(supportStart, supportEnd);
 
   // Sort and paginate contact messages
-  const sortedContacts = (contactMessages || [])
-    .slice()
-    .sort((a: any, b: any) => {
-      const ad = new Date(a.created_on || a.submitted_on || 0).getTime();
-      const bd = new Date(b.created_on || b.submitted_on || 0).getTime();
-      return bd - ad;
-    });
+  const sortedContacts = (contactMessages || []).slice().sort((a: any, b: any) => {
+    const ad = new Date(a.created_on || a.submitted_on || 0).getTime();
+    const bd = new Date(b.created_on || b.submitted_on || 0).getTime();
+    return bd - ad;
+  });
   const contactTotal = sortedContacts.length;
   const contactTotalPages = Math.max(1, Math.ceil(contactTotal / pageSize));
   const contactStart = (contactPage - 1) * pageSize;
@@ -119,11 +121,14 @@ export const ItSupportPage: React.FC = () => {
           <div>
             <h1 className="text-4xl font-bold">IT Support Hub</h1>
             <p className="mt-2 max-w-2xl text-sm text-primary-100/90">
-              Monitor open support requests and respond to contact form enquiries from a single place.
+              Monitor open support requests and respond to contact form enquiries from a single
+              place.
             </p>
           </div>
           <div className="rounded-xl border border-primary-300/40 bg-primary-500/20 px-4 py-3 text-right">
-            <div className="text-xs font-semibold uppercase tracking-wide text-primary-100">Active Tickets</div>
+            <div className="text-xs font-semibold uppercase tracking-wide text-primary-100">
+              Active Tickets
+            </div>
             <div className="text-3xl font-bold text-white">{activeTicketCount}</div>
           </div>
         </div>
@@ -133,7 +138,9 @@ export const ItSupportPage: React.FC = () => {
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <div className="mb-4 flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Support Tickets</h2>
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
+                Support Tickets
+              </h2>
               <p className="text-sm text-slate-500 dark:text-slate-300">
                 Follow up on IT support tickets and close them when resolved.
               </p>
@@ -165,8 +172,13 @@ export const ItSupportPage: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-200 bg-white dark:divide-slate-800 dark:bg-slate-900">
                   {visibleSupport.map((ticket) => (
-                    <tr key={ticket.ticket_id} className="align-top hover:bg-slate-50 dark:hover:bg-slate-800">
-                      <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">{ticket.subject}</td>
+                    <tr
+                      key={ticket.ticket_id}
+                      className="align-top hover:bg-slate-50 dark:hover:bg-slate-800"
+                    >
+                      <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">
+                        {ticket.subject}
+                      </td>
                       <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
                         <div className="whitespace-pre-wrap break-words">{ticket.description}</div>
                         {ticket.responses?.length ? (
@@ -176,9 +188,12 @@ export const ItSupportPage: React.FC = () => {
                                 key={response.response_id}
                                 className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                               >
-                                <div className="text-slate-700 dark:text-slate-200">{response.message}</div>
+                                <div className="text-slate-700 dark:text-slate-200">
+                                  {response.message}
+                                </div>
                                 <div className="mt-1 text-[10px] text-slate-500 dark:text-slate-400">
-                                  {response.responder} • {new Date(response.created_on).toLocaleString()}
+                                  {response.responder} •{' '}
+                                  {new Date(response.created_on).toLocaleString()}
                                 </div>
                               </div>
                             ))}
@@ -197,14 +212,18 @@ export const ItSupportPage: React.FC = () => {
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-2">
-                            <span className="font-medium">{ticket.name || ticket.email || 'Unknown'}</span>
+                            <span className="font-medium">
+                              {ticket.name || ticket.email || 'Unknown'}
+                            </span>
                             <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-400/10 dark:text-amber-300">
                               Guest
                             </span>
                           </span>
                         )}
                         {!ticket.created_by && ticket.email ? (
-                          <div className="mt-0.5 text-xs text-primary-600 dark:text-primary-300">{ticket.email}</div>
+                          <div className="mt-0.5 text-xs text-primary-600 dark:text-primary-300">
+                            {ticket.email}
+                          </div>
                         ) : null}
                       </td>
                       <td className="px-4 py-3 text-xs">
@@ -213,8 +232,8 @@ export const ItSupportPage: React.FC = () => {
                             ticket.status === 'resolved'
                               ? 'bg-emerald-100 text-emerald-700'
                               : ticket.status === 'in_progress'
-                              ? 'bg-primary-100 text-primary-700'
-                              : 'bg-slate-100 text-slate-600'
+                                ? 'bg-primary-100 text-primary-700'
+                                : 'bg-slate-100 text-slate-600'
                           }`}
                         >
                           {ticket.status}
@@ -229,7 +248,10 @@ export const ItSupportPage: React.FC = () => {
                             type="text"
                             value={supportReplies[ticket.ticket_id] || ''}
                             onChange={(event) =>
-                              setSupportReplies((prev) => ({ ...prev, [ticket.ticket_id]: event.target.value }))
+                              setSupportReplies((prev) => ({
+                                ...prev,
+                                [ticket.ticket_id]: event.target.value,
+                              }))
                             }
                             placeholder="Reply"
                             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
@@ -238,7 +260,10 @@ export const ItSupportPage: React.FC = () => {
                             <button
                               type="button"
                               onClick={() =>
-                                supportReply.mutate({ id: ticket.ticket_id, message: supportReplies[ticket.ticket_id] || '' })
+                                supportReply.mutate({
+                                  id: ticket.ticket_id,
+                                  message: supportReplies[ticket.ticket_id] || '',
+                                })
                               }
                               disabled={!supportReplies[ticket.ticket_id] || supportReply.isPending}
                               className="rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-primary-700 disabled:opacity-60"
@@ -273,7 +298,9 @@ export const ItSupportPage: React.FC = () => {
                   >
                     Previous
                   </button>
-                  <span>Page {supportPage} of {supportTotalPages}</span>
+                  <span>
+                    Page {supportPage} of {supportTotalPages}
+                  </span>
                   <button
                     type="button"
                     onClick={() => setSupportPage((p) => Math.min(supportTotalPages, p + 1))}
@@ -291,7 +318,9 @@ export const ItSupportPage: React.FC = () => {
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <div className="mb-4 flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Contact Messages</h2>
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
+                Contact Messages
+              </h2>
               <p className="text-sm text-slate-500 dark:text-slate-300">
                 Respond to enquiries submitted through the public contact form.
               </p>
@@ -329,9 +358,15 @@ export const ItSupportPage: React.FC = () => {
                     const replyValue = contactReplies[key] || '';
                     return (
                       <tr key={key} className="align-top hover:bg-slate-50 dark:hover:bg-slate-800">
-                        <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">{message.name}</td>
-                        <td className="px-4 py-3 text-sm text-primary-600 dark:text-primary-300">{message.email}</td>
-                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">{message.subject || '—'}</td>
+                        <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">
+                          {message.name}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-primary-600 dark:text-primary-300">
+                          {message.email}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
+                          {message.subject || '—'}
+                        </td>
                         <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
                           <div className="whitespace-pre-wrap break-words">{message.message}</div>
                           {message.reply_text ? (
@@ -341,8 +376,10 @@ export const ItSupportPage: React.FC = () => {
                           ) : null}
                         </td>
                         <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">
-                          {(message.created_on || message.submitted_on)
-                            ? new Date((message.created_on || message.submitted_on) as string).toLocaleString()
+                          {message.created_on || message.submitted_on
+                            ? new Date(
+                                (message.created_on || message.submitted_on) as string
+                              ).toLocaleString()
                             : '—'}
                         </td>
                         <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-300">
@@ -351,8 +388,8 @@ export const ItSupportPage: React.FC = () => {
                               message.status === 'completed'
                                 ? 'bg-emerald-100 text-emerald-700'
                                 : message.status === 'replied'
-                                ? 'bg-primary-100 text-primary-700'
-                                : 'bg-slate-100 text-slate-600'
+                                  ? 'bg-primary-100 text-primary-700'
+                                  : 'bg-slate-100 text-slate-600'
                             }`}
                           >
                             {message.status || 'open'}
@@ -360,7 +397,9 @@ export const ItSupportPage: React.FC = () => {
                           {message.replied_by ? (
                             <div className="mt-1 text-[10px] text-slate-500 dark:text-slate-400">
                               {message.replied_by}
-                              {message.replied_on ? ` • ${new Date(message.replied_on).toLocaleString()}` : ''}
+                              {message.replied_on
+                                ? ` • ${new Date(message.replied_on).toLocaleString()}`
+                                : ''}
                             </div>
                           ) : null}
                         </td>
@@ -370,7 +409,10 @@ export const ItSupportPage: React.FC = () => {
                               type="text"
                               value={replyValue}
                               onChange={(event) =>
-                                setContactReplies((prev) => ({ ...prev, [key]: event.target.value }))
+                                setContactReplies((prev) => ({
+                                  ...prev,
+                                  [key]: event.target.value,
+                                }))
                               }
                               placeholder="Type reply"
                               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
@@ -386,7 +428,13 @@ export const ItSupportPage: React.FC = () => {
                               </button>
                               <button
                                 type="button"
-                                onClick={() => contactReply.mutate({ id: key, reply: replyValue, complete: true })}
+                                onClick={() =>
+                                  contactReply.mutate({
+                                    id: key,
+                                    reply: replyValue,
+                                    complete: true,
+                                  })
+                                }
                                 disabled={!replyValue || contactReply.isPending}
                                 className="rounded-lg border border-emerald-500 px-3 py-1.5 text-xs font-semibold text-emerald-600 transition hover:bg-emerald-50 disabled:opacity-60 dark:border-emerald-400 dark:text-emerald-300 dark:hover:bg-emerald-400/10"
                               >
@@ -413,7 +461,9 @@ export const ItSupportPage: React.FC = () => {
                   >
                     Previous
                   </button>
-                  <span>Page {contactPage} of {contactTotalPages}</span>
+                  <span>
+                    Page {contactPage} of {contactTotalPages}
+                  </span>
                   <button
                     type="button"
                     onClick={() => setContactPage((p) => Math.min(contactTotalPages, p + 1))}

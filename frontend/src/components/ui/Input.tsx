@@ -1,4 +1,10 @@
-import { forwardRef, InputHTMLAttributes, LabelHTMLAttributes, TextareaHTMLAttributes, SelectHTMLAttributes } from 'react';
+import {
+  forwardRef,
+  InputHTMLAttributes,
+  LabelHTMLAttributes,
+  TextareaHTMLAttributes,
+  SelectHTMLAttributes,
+} from 'react';
 import { clsx } from 'clsx';
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -60,7 +66,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-1.5"
           >
             {label}
-            {required && <span className="text-red-500" aria-hidden="true">*</span>}
+            {required && (
+              <span className="text-red-500" aria-hidden="true">
+                *
+              </span>
+            )}
           </label>
         )}
         <div className="relative">
@@ -104,8 +114,17 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             className="mt-2 text-xs text-red-400 flex items-center gap-1"
             role="alert"
           >
-            <svg className="h-3.5 w-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            <svg
+              className="h-3.5 w-3.5 flex-shrink-0"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              aria-hidden="true"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
             </svg>
             {error}
           </p>
@@ -130,11 +149,18 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(
   ({ className = '', required, children, ...props }, ref) => (
     <label
       ref={ref}
-      className={clsx('block text-sm font-medium text-slate-300 mb-2 flex items-center gap-1.5', className)}
+      className={clsx(
+        'block text-sm font-medium text-slate-300 mb-2 flex items-center gap-1.5',
+        className
+      )}
       {...props}
     >
       {children}
-      {required && <span className="text-red-500" aria-hidden="true">*</span>}
+      {required && (
+        <span className="text-red-500" aria-hidden="true">
+          *
+        </span>
+      )}
     </label>
   )
 );
@@ -147,19 +173,7 @@ export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElemen
 }
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  (
-    {
-      label,
-      helperText,
-      error,
-      className = '',
-      id,
-      disabled,
-      required,
-      ...props
-    },
-    ref
-  ) => {
+  ({ label, helperText, error, className = '', id, disabled, required, ...props }, ref) => {
     const textareaId = id || label?.toLowerCase().replace(/\s+/g, '-');
     const helperId = helperText ? `${textareaId}-helper` : undefined;
     const errorId = error ? `${textareaId}-error` : undefined;
@@ -173,33 +187,46 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-1.5"
           >
             {label}
-            {required && <span className="text-red-500" aria-hidden="true">*</span>}
+            {required && (
+              <span className="text-red-500" aria-hidden="true">
+                *
+              </span>
+            )}
           </label>
         )}
         <textarea
-                    ref={ref}
-                    id={textareaId}
-                    className={clsx(
-                      baseStyles,
-                      error ? states.error : states.default,
-                      disabled && states.disabled,
-                      className
-                    )}
-                    disabled={disabled}
-                    aria-invalid={error ? 'true' : 'false'}
-                    aria-describedby={describedBy}
-                    aria-required={required}
-                    rows={4}
-                    {...props}
-                  />
+          ref={ref}
+          id={textareaId}
+          className={clsx(
+            baseStyles,
+            error ? states.error : states.default,
+            disabled && states.disabled,
+            className
+          )}
+          disabled={disabled}
+          aria-invalid={error ? 'true' : 'false'}
+          aria-describedby={describedBy}
+          aria-required={required}
+          rows={4}
+          {...props}
+        />
         {error && (
           <p
             id={errorId}
             className="mt-2 text-xs text-red-400 flex items-center gap-1"
             role="alert"
           >
-            <svg className="h-3.5 w-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            <svg
+              className="h-3.5 w-3.5 flex-shrink-0"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              aria-hidden="true"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
             </svg>
             {error}
           </p>
@@ -252,7 +279,11 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-1.5"
           >
             {label}
-            {required && <span className="text-red-500" aria-hidden="true">*</span>}
+            {required && (
+              <span className="text-red-500" aria-hidden="true">
+                *
+              </span>
+            )}
           </label>
         )}
         <div className="relative">
@@ -294,17 +325,22 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         </div>
         {error && (
           <p className="mt-2 text-xs text-red-400 flex items-center gap-1" role="alert">
-            <svg className="h-3.5 w-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            <svg
+              className="h-3.5 w-3.5 flex-shrink-0"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              aria-hidden="true"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
             </svg>
             {error}
           </p>
         )}
-        {helperText && !error && (
-          <p className="mt-2 text-xs text-slate-500">
-            {helperText}
-          </p>
-        )}
+        {helperText && !error && <p className="mt-2 text-xs text-slate-500">{helperText}</p>}
       </div>
     );
   }

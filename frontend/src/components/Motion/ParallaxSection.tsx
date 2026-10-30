@@ -27,9 +27,7 @@ export const ParallaxSection: React.FC<ParallaxSectionProps> = ({
 
   return (
     <div ref={ref} className={className}>
-      <motion.div style={{ y }}>
-        {children}
-      </motion.div>
+      <motion.div style={{ y }}>{children}</motion.div>
     </div>
   );
 };

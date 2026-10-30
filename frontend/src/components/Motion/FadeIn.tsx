@@ -1,7 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-export const FadeIn: React.FC<React.PropsWithChildren<{ className?: string }>> = ({ children, className }) => {
+export const FadeIn: React.FC<React.PropsWithChildren<{ className?: string }>> = ({
+  children,
+  className,
+}) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}

@@ -28,27 +28,47 @@ interface InterventionPriority {
 }
 
 export default function AnalyticsDashboard() {
-  const { data: summary, isLoading: loadingSummary, error: summaryError } = useQuery({
+  const {
+    data: summary,
+    isLoading: loadingSummary,
+    error: summaryError,
+  } = useQuery({
     queryKey: ['analyticsSummary'],
     queryFn: () => api.getAnalyticsSummary(),
   });
 
-  const { data: gpaDist, isLoading: loadingGpa, error: gpaError } = useQuery({
+  const {
+    data: gpaDist,
+    isLoading: loadingGpa,
+    error: gpaError,
+  } = useQuery({
     queryKey: ['gpaDistribution'],
     queryFn: () => api.getGpaDistribution(),
   });
 
-  const { data: riskDist, isLoading: loadingRisk, error: riskError } = useQuery({
+  const {
+    data: riskDist,
+    isLoading: loadingRisk,
+    error: riskError,
+  } = useQuery({
     queryKey: ['riskDistribution'],
     queryFn: () => api.getRiskDistribution(),
   });
 
-  const { data: deptPerf, isLoading: loadingDept, error: deptError } = useQuery({
+  const {
+    data: deptPerf,
+    isLoading: loadingDept,
+    error: deptError,
+  } = useQuery({
     queryKey: ['deptPerformance'],
     queryFn: () => api.getDepartmentPerformance(),
   });
 
-  const { data: interventions, isLoading: loadingInterventions, error: interventionsError } = useQuery({
+  const {
+    data: interventions,
+    isLoading: loadingInterventions,
+    error: interventionsError,
+  } = useQuery({
     queryKey: ['interventionPriority'],
     queryFn: () => api.getInterventionPriority(15),
   });
@@ -65,11 +85,17 @@ export default function AnalyticsDashboard() {
   }
 
   if (summaryError || gpaError || riskError || deptError || interventionsError) {
-    return <div className="min-h-screen bg-gray-50 p-8 text-center text-red-600">Unable to load analytics data. Please try again.</div>;
+    return (
+      <div className="min-h-screen bg-gray-50 p-8 text-center text-red-600">
+        Unable to load analytics data. Please try again.
+      </div>
+    );
   }
 
-  const formatGPA = (gpa: number | null | undefined) => (gpa != null ? (gpa / 25).toFixed(2) : 'N/A');
-  const formatPercentage = (val: number | null | undefined) => (val != null ? `${val.toFixed(1)}%` : 'N/A');
+  const formatGPA = (gpa: number | null | undefined) =>
+    gpa != null ? (gpa / 25).toFixed(2) : 'N/A';
+  const formatPercentage = (val: number | null | undefined) =>
+    val != null ? `${val.toFixed(1)}%` : 'N/A';
 
   const renderRiskBadge = (level: string) => {
     const colors: Record<string, string> = {
@@ -79,7 +105,9 @@ export default function AnalyticsDashboard() {
       Critical: 'bg-red-100 text-red-800',
     };
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${colors[level] || 'bg-gray-100 text-gray-800'}`}>
+      <span
+        className={`px-2 py-1 rounded-full text-xs font-semibold ${colors[level] || 'bg-gray-100 text-gray-800'}`}
+      >
         {level}
       </span>
     );
@@ -93,7 +121,9 @@ export default function AnalyticsDashboard() {
       Immediate: 'bg-red-100 text-red-800',
     };
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${colors[priority] || 'bg-gray-100 text-gray-800'}`}>
+      <span
+        className={`px-2 py-1 rounded-full text-xs font-semibold ${colors[priority] || 'bg-gray-100 text-gray-800'}`}
+      >
         {priority}
       </span>
     );
@@ -111,7 +141,9 @@ export default function AnalyticsDashboard() {
       <div className="max-w-7xl mx-auto space-y-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Student Analytics Dashboard</h1>
-          <p className="mt-2 text-gray-600">Data-driven insights for student performance monitoring</p>
+          <p className="mt-2 text-gray-600">
+            Data-driven insights for student performance monitoring
+          </p>
         </div>
 
         {/* KPI Cards */}
@@ -126,7 +158,9 @@ export default function AnalyticsDashboard() {
           </div>
           <div className="bg-white rounded-xl shadow-sm border p-6">
             <h3 className="text-sm font-medium text-gray-500 truncate">Average Attendance</h3>
-            <p className="mt-2 text-3xl font-bold text-green-600">{formatPercentage(summary?.average_attendance)}</p>
+            <p className="mt-2 text-3xl font-bold text-green-600">
+              {formatPercentage(summary?.average_attendance)}
+            </p>
           </div>
           <div className="bg-white rounded-xl shadow-sm border p-6">
             <h3 className="text-sm font-medium text-gray-500 truncate">At-Risk Students</h3>
@@ -150,7 +184,7 @@ export default function AnalyticsDashboard() {
               </ResponsiveContainer>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-xl shadow-sm border p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Risk Distribution</h3>
             <div className="h-64 flex justify-center">
@@ -206,36 +240,93 @@ export default function AnalyticsDashboard() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rank</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student Name</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GPA</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Attendance</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk Score</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk Level</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Rank
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Student Name
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Department
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    GPA
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Attendance
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Risk Score
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Risk Level
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Priority
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {(interventions as InterventionPriority[] | undefined)?.map((item, index) => (
                   <tr key={item.student_id || index}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{index + 1}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.full_name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.department}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatGPA(item.avg_score)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatPercentage(item.attendance_rate)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.risk_score != null ? `${(item.risk_score * 100).toFixed(1)}%` : 'N/A'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{renderRiskBadge(item.risk_level)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{renderPriorityBadge(item.priority)}</td>
-                  </tr>
-                ))}
-                {!interventions || interventions.length === 0 && (
-                  <tr>
-                    <td colSpan={8} className="px-6 py-4 text-center text-sm text-gray-500">
-                      No intervention data available.
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {index + 1}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {item.full_name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {item.department}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {formatGPA(item.avg_score)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {formatPercentage(item.attendance_rate)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {item.risk_score != null ? `${(item.risk_score * 100).toFixed(1)}%` : 'N/A'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      {renderRiskBadge(item.risk_level)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      {renderPriorityBadge(item.priority)}
                     </td>
                   </tr>
-                )}
+                ))}
+                {!interventions ||
+                  (interventions.length === 0 && (
+                    <tr>
+                      <td colSpan={8} className="px-6 py-4 text-center text-sm text-gray-500">
+                        No intervention data available.
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>

@@ -32,15 +32,19 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
   return (
     <motion.div
       ref={ref}
-      initial={{ 
-        opacity: 0, 
-        ...directions[direction]
+      initial={{
+        opacity: 0,
+        ...directions[direction],
       }}
-      animate={isInView ? { 
-        opacity: 1, 
-        x: 0, 
-        y: 0 
-      } : {}}
+      animate={
+        isInView
+          ? {
+              opacity: 1,
+              x: 0,
+              y: 0,
+            }
+          : {}
+      }
       transition={{
         duration: 0.6,
         delay,

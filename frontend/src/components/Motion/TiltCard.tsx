@@ -13,11 +13,7 @@ interface TiltCardProps {
   intensity?: number;
 }
 
-export const TiltCard: React.FC<TiltCardProps> = ({ 
-  children, 
-  className = '',
-  intensity = 15 
-}) => {
+export const TiltCard: React.FC<TiltCardProps> = ({ children, className = '', intensity = 15 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const x = useMotionValue(0);
@@ -38,8 +34,8 @@ export const TiltCard: React.FC<TiltCardProps> = ({
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
-    const xPct = (mouseX / width - 0.5);
-    const yPct = (mouseY / height - 0.5);
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
 
     x.set(xPct);
     y.set(yPct);
@@ -54,7 +50,7 @@ export const TiltCard: React.FC<TiltCardProps> = ({
     <motion.div
       ref={ref}
       onMouseMove={handleMouseMove}
-      
+
       onMouseLeave={handleMouseLeave}
       style={{
         rotateX,
@@ -65,9 +61,7 @@ export const TiltCard: React.FC<TiltCardProps> = ({
       whileHover={{ scale: 1.02 }}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
     >
-      <div style={{ transform: 'translateZ(50px)' }}>
-        {children}
-      </div>
+      <div style={{ transform: 'translateZ(50px)' }}>{children}</div>
     </motion.div>
   );
 };

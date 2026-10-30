@@ -15,12 +15,12 @@ import { StaggerContainer, StaggerItem } from '@/components/Motion/StaggerContai
 import { AnimatedCounter } from '@/components/Motion/AnimatedCounter';
 import { TiltCard } from '@/components/Motion/TiltCard';
 import { MagneticButton } from '@/components/Motion/MagneticButton';
-import { 
-  ExclamationTriangleIcon, 
-  PlayIcon, 
+import {
+  ExclamationTriangleIcon,
+  PlayIcon,
   ChartBarIcon,
   UserGroupIcon,
-  Cog6ToothIcon
+  Cog6ToothIcon,
 } from '@heroicons/react/24/outline';
 
 export const RiskPanelPage: React.FC = () => {
@@ -44,7 +44,12 @@ export const RiskPanelPage: React.FC = () => {
     const term = flagSearch.trim().toLowerCase();
     if (!term) return riskFlags || [];
     return (riskFlags || []).filter((flag) => {
-      type ExtendedRiskFlag = RiskFlag & Partial<{ student_name: string; roll_number: string; student: { name?: string; roll_number?: string } }>;
+      type ExtendedRiskFlag = RiskFlag &
+        Partial<{
+          student_name: string;
+          roll_number: string;
+          student: { name?: string; roll_number?: string };
+        }>;
       const ext = flag as ExtendedRiskFlag;
       const name = (ext.student_name || ext.student?.name || '').toLowerCase();
       const roll = (ext.student?.roll_number || ext.roll_number || '').toLowerCase();
@@ -87,12 +92,14 @@ export const RiskPanelPage: React.FC = () => {
   if (isLoading) return <Loading message="Loading risk data..." />;
 
   const atRiskCount = riskFlags?.length || 0;
-  const avgGPA = riskFlags && riskFlags.length > 0
-    ? riskFlags.reduce((sum, f) => sum + f.avg_gpa, 0) / riskFlags.length
-    : 0;
-  const avgAtt = riskFlags && riskFlags.length > 0
-    ? riskFlags.reduce((sum, f) => sum + f.avg_attendance, 0) / riskFlags.length
-    : 0;
+  const avgGPA =
+    riskFlags && riskFlags.length > 0
+      ? riskFlags.reduce((sum, f) => sum + f.avg_gpa, 0) / riskFlags.length
+      : 0;
+  const avgAtt =
+    riskFlags && riskFlags.length > 0
+      ? riskFlags.reduce((sum, f) => sum + f.avg_attendance, 0) / riskFlags.length
+      : 0;
 
   return (
     <FadeIn className="space-y-6">
@@ -116,7 +123,9 @@ export const RiskPanelPage: React.FC = () => {
                 <UserGroupIcon className="w-10 h-10 text-orange-400" />
                 <div>
                   <p className="text-sm text-gray-300">Flagged Students</p>
-                  <p className="text-3xl font-bold"><AnimatedCounter value={atRiskCount} /></p>
+                  <p className="text-3xl font-bold">
+                    <AnimatedCounter value={atRiskCount} />
+                  </p>
                 </div>
               </div>
             </div>
@@ -128,7 +137,9 @@ export const RiskPanelPage: React.FC = () => {
                 <ChartBarIcon className="w-10 h-10 text-cyan-400" />
                 <div>
                   <p className="text-sm text-gray-300">Avg GPA (At Risk)</p>
-                  <p className="text-3xl font-bold"><AnimatedCounter value={avgGPA} decimals={2} /></p>
+                  <p className="text-3xl font-bold">
+                    <AnimatedCounter value={avgGPA} decimals={2} />
+                  </p>
                 </div>
               </div>
             </div>
@@ -140,7 +151,9 @@ export const RiskPanelPage: React.FC = () => {
                 <ChartBarIcon className="w-10 h-10 text-purple-400" />
                 <div>
                   <p className="text-sm text-gray-300">Avg Attendance (At Risk)</p>
-                  <p className="text-3xl font-bold"><AnimatedCounter value={avgAtt} decimals={1} suffix="%" /></p>
+                  <p className="text-3xl font-bold">
+                    <AnimatedCounter value={avgAtt} decimals={1} suffix="%" />
+                  </p>
                 </div>
               </div>
             </div>
@@ -150,20 +163,24 @@ export const RiskPanelPage: React.FC = () => {
 
       {/* Run Risk Detection Card */}
       <TiltCard>
-            <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-mint-500 to-cyan-500 flex items-center justify-center">
               <PlayIcon className="w-6 h-6 text-white" />
             </div>
             <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100">Run Risk Detection</h2>
-                  <p className="text-gray-600 dark:text-slate-400">Configure thresholds and execute analysis</p>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100">
+                Run Risk Detection
+              </h2>
+              <p className="text-gray-600 dark:text-slate-400">
+                Configure thresholds and execute analysis
+              </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2 dark:text-slate-300">
+              <label className="block text-sm font-medium text-gray-700 mb-2 dark:text-slate-300">
                 GPA Threshold
               </label>
               <input
@@ -171,21 +188,25 @@ export const RiskPanelPage: React.FC = () => {
                 step="0.1"
                 value={gpaThreshold}
                 onChange={(e) => setGpaThreshold(parseFloat(e.target.value))}
-                    className="w-full rounded-xl bg-gray-50 border border-gray-300 px-4 py-3 text-gray-900 focus:ring-2 focus:ring-mint-500 focus:border-mint-500 outline-none transition-all dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
+                className="w-full rounded-xl bg-gray-50 border border-gray-300 px-4 py-3 text-gray-900 focus:ring-2 focus:ring-mint-500 focus:border-mint-500 outline-none transition-all dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
               />
-                  <p className="text-xs text-gray-500 mt-1 dark:text-slate-400">Students below this GPA will be flagged</p>
+              <p className="text-xs text-gray-500 mt-1 dark:text-slate-400">
+                Students below this GPA will be flagged
+              </p>
             </div>
             <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2 dark:text-slate-300">
+              <label className="block text-sm font-medium text-gray-700 mb-2 dark:text-slate-300">
                 Attendance Threshold (%)
               </label>
               <input
                 type="number"
                 value={attThreshold}
                 onChange={(e) => setAttThreshold(parseInt(e.target.value))}
-                    className="w-full rounded-xl bg-gray-50 border border-gray-300 px-4 py-3 text-gray-900 focus:ring-2 focus:ring-mint-500 focus:border-mint-500 outline-none transition-all dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
+                className="w-full rounded-xl bg-gray-50 border border-gray-300 px-4 py-3 text-gray-900 focus:ring-2 focus:ring-mint-500 focus:border-mint-500 outline-none transition-all dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
               />
-                  <p className="text-xs text-gray-500 mt-1 dark:text-slate-400">Students below this attendance will be flagged</p>
+              <p className="text-xs text-gray-500 mt-1 dark:text-slate-400">
+                Students below this attendance will be flagged
+              </p>
             </div>
           </div>
 
@@ -197,8 +218,20 @@ export const RiskPanelPage: React.FC = () => {
             {runRiskMutation.isPending ? (
               <span className="flex items-center gap-2">
                 <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
                 </svg>
                 Running Analysis...
               </span>
@@ -212,17 +245,19 @@ export const RiskPanelPage: React.FC = () => {
         </div>
       </TiltCard>
 
-  {/* Admin Rules Section */}
-  {(role === 'academic_head' || role === 'it') && <AdminRulesSection />}
+      {/* Admin Rules Section */}
+      {(role === 'academic_head' || role === 'it') && <AdminRulesSection />}
 
       {/* Flagged Students Table */}
-  <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
             <ExclamationTriangleIcon className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100">Flagged Students</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100">
+              Flagged Students
+            </h2>
             <p className="text-gray-600 dark:text-slate-400">
               {flagSearch.trim()
                 ? `${filteredCount} ${filteredCount === 1 ? 'match' : 'matches'} for "${flagSearch.trim()}"`
@@ -235,100 +270,128 @@ export const RiskPanelPage: React.FC = () => {
           <div className="text-center py-12">
             <ExclamationTriangleIcon className="w-16 h-16 text-gray-300 mx-auto mb-3" />
             <p className="text-gray-500 text-lg">No at-risk students detected</p>
-            <p className="text-sm text-gray-400 mt-2">Run risk detection to identify students needing support</p>
+            <p className="text-sm text-gray-400 mt-2">
+              Run risk detection to identify students needing support
+            </p>
           </div>
         ) : (
           <>
-              <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <div className="relative sm:w-72">
-                  <input
-                    value={flagSearch}
-                    onChange={(event) => setFlagSearch(event.target.value)}
-                    placeholder="Search flagged students..."
-                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 shadow-inner focus:border-mint-500 focus:outline-none focus:ring-2 focus:ring-mint-200 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
-                  />
-                  <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-xs uppercase text-gray-400 dark:text-slate-500">
-                    {filteredCount}
+            <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div className="relative sm:w-72">
+                <input
+                  value={flagSearch}
+                  onChange={(event) => setFlagSearch(event.target.value)}
+                  placeholder="Search flagged students..."
+                  className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 shadow-inner focus:border-mint-500 focus:outline-none focus:ring-2 focus:ring-mint-200 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
+                />
+                <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-xs uppercase text-gray-400 dark:text-slate-500">
+                  {filteredCount}
+                </span>
+              </div>
+              <div className="flex flex-col gap-2 text-sm text-gray-500 sm:flex-row sm:items-center sm:justify-end dark:text-slate-400">
+                <span className="font-medium uppercase tracking-wide">
+                  Showing {flagRangeStart.toLocaleString()}-{flagRangeEnd.toLocaleString()} of{' '}
+                  {filteredCount.toLocaleString()} results
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setFlagPage((prev) => Math.max(1, prev - 1))}
+                    disabled={flagPage === 1}
+                    className="rounded-lg border border-gray-300 px-3 py-1 text-xs font-semibold text-gray-600 transition hover:border-mint-400 hover:text-mint-600 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:text-slate-300 dark:hover:border-mint-400 dark:hover:text-mint-400"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-xs font-semibold text-gray-500">
+                    Page {flagPage} of {totalFlagPages}
                   </span>
-                </div>
-                <div className="flex flex-col gap-2 text-sm text-gray-500 sm:flex-row sm:items-center sm:justify-end dark:text-slate-400">
-                  <span className="font-medium uppercase tracking-wide">
-                    Showing {flagRangeStart.toLocaleString()}-{flagRangeEnd.toLocaleString()} of {filteredCount.toLocaleString()} results
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setFlagPage((prev) => Math.max(1, prev - 1))}
-                      disabled={flagPage === 1}
-                      className="rounded-lg border border-gray-300 px-3 py-1 text-xs font-semibold text-gray-600 transition hover:border-mint-400 hover:text-mint-600 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:text-slate-300 dark:hover:border-mint-400 dark:hover:text-mint-400"
-                    >
-                      Previous
-                    </button>
-                    <span className="text-xs font-semibold text-gray-500">
-                      Page {flagPage} of {totalFlagPages}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setFlagPage((prev) => Math.min(totalFlagPages, prev + 1))}
-                      disabled={flagPage === totalFlagPages}
-                      className="rounded-lg border border-gray-300 px-3 py-1 text-xs font-semibold text-gray-600 transition hover:border-mint-400 hover:text-mint-600 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:text-slate-300 dark:hover:border-mint-400 dark:hover:text-mint-400"
-                    >
-                      Next
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setFlagPage((prev) => Math.min(totalFlagPages, prev + 1))}
+                    disabled={flagPage === totalFlagPages}
+                    className="rounded-lg border border-gray-300 px-3 py-1 text-xs font-semibold text-gray-600 transition hover:border-mint-400 hover:text-mint-600 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:text-slate-300 dark:hover:border-mint-400 dark:hover:text-mint-400"
+                  >
+                    Next
+                  </button>
                 </div>
               </div>
-              {filteredCount === 0 ? (
-                <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-6 py-10 text-center text-sm text-gray-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                  No students match your search.
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-800">
-                    <thead className="bg-gray-50 dark:bg-slate-800">
-                      <tr>
-                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider dark:text-slate-300">Student</th>
-                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider dark:text-slate-300">Reason</th>
-                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider dark:text-slate-300">GPA</th>
-                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider dark:text-slate-300">Attendance</th>
-                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider dark:text-slate-300">Flagged On</th>
+            </div>
+            {filteredCount === 0 ? (
+              <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-6 py-10 text-center text-sm text-gray-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                No students match your search.
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-800">
+                  <thead className="bg-gray-50 dark:bg-slate-800">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider dark:text-slate-300">
+                        Student
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider dark:text-slate-300">
+                        Reason
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider dark:text-slate-300">
+                        GPA
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider dark:text-slate-300">
+                        Attendance
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider dark:text-slate-300">
+                        Flagged On
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 bg-white dark:divide-slate-800 dark:bg-slate-900">
+                    {visibleFlags.map((flag) => (
+                      <tr
+                        key={flag.flag_id}
+                        className="hover:bg-gray-50 transition-colors dark:hover:bg-slate-800"
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="font-medium text-gray-900 dark:text-slate-100">
+                            {(
+                              flag as RiskFlag &
+                                Partial<{ student_name: string; student: { name?: string } }>
+                            ).student_name ||
+                              flag.student?.name ||
+                              'Student'}
+                          </div>
+                          <div className="text-sm text-gray-500 dark:text-slate-400">
+                            {flag.student?.roll_number ||
+                              (flag as RiskFlag & Partial<{ roll_number: string }>).roll_number}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="px-3 py-1 text-xs font-medium rounded-full bg-gradient-to-r from-orange-500 to-red-500 text-white">
+                            {flag.reason}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className={`text-lg font-bold ${flag.avg_gpa < 2.5 ? 'text-red-600' : 'text-gray-900 dark:text-slate-100'}`}
+                          >
+                            {flag.avg_gpa.toFixed(2)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className={`text-lg font-bold ${flag.avg_attendance < 75 ? 'text-red-600' : 'text-gray-900 dark:text-slate-100'}`}
+                          >
+                            {flag.avg_attendance.toFixed(1)}%
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-slate-400">
+                          {new Date(flag.flagged_on).toLocaleDateString()}
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200 bg-white dark:divide-slate-800 dark:bg-slate-900">
-                      {visibleFlags.map((flag) => (
-                        <tr key={flag.flag_id} className="hover:bg-gray-50 transition-colors dark:hover:bg-slate-800">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="font-medium text-gray-900 dark:text-slate-100">
-                              {(flag as RiskFlag & Partial<{ student_name: string; student: { name?: string } }>).student_name || flag.student?.name || 'Student'}
-                            </div>
-                            <div className="text-sm text-gray-500 dark:text-slate-400">{flag.student?.roll_number || (flag as RiskFlag & Partial<{ roll_number: string }>).roll_number}</div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="px-3 py-1 text-xs font-medium rounded-full bg-gradient-to-r from-orange-500 to-red-500 text-white">
-                              {flag.reason}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`text-lg font-bold ${flag.avg_gpa < 2.5 ? 'text-red-600' : 'text-gray-900 dark:text-slate-100'}`}>
-                              {flag.avg_gpa.toFixed(2)}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`text-lg font-bold ${flag.avg_attendance < 75 ? 'text-red-600' : 'text-gray-900 dark:text-slate-100'}`}>
-                              {flag.avg_attendance.toFixed(1)}%
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-slate-400">
-                            {new Date(flag.flagged_on).toLocaleDateString()}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </>
-          )}
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </FadeIn>
   );
@@ -340,7 +403,9 @@ const AdminRulesSection: React.FC = () => {
   const { data: rules } = useQuery({
     queryKey: ['risk-rules'],
     queryFn: async () => {
-      const response = await axiosClient.get<ApiResponse<RiskRulesConfig>>(API_ENDPOINTS.RISK_RULES);
+      const response = await axiosClient.get<ApiResponse<RiskRulesConfig>>(
+        API_ENDPOINTS.RISK_RULES
+      );
       return response.data.data;
     },
   });
@@ -364,7 +429,10 @@ const AdminRulesSection: React.FC = () => {
         attendanceThreshold: att,
         autoRunEnabled: auto,
       };
-      const response = await axiosClient.post<ApiResponse<RiskRulesConfig>>(API_ENDPOINTS.RISK_RULES, payload);
+      const response = await axiosClient.post<ApiResponse<RiskRulesConfig>>(
+        API_ENDPOINTS.RISK_RULES,
+        payload
+      );
       return response.data;
     },
     onSuccess: (res) => {
@@ -386,8 +454,12 @@ const AdminRulesSection: React.FC = () => {
             <Cog6ToothIcon className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-slate-100">Admin: Risk Rules Configuration</h3>
-            <p className="text-sm text-gray-600 dark:text-slate-400">System-wide risk detection settings</p>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-slate-100">
+              Admin: Risk Rules Configuration
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-slate-400">
+              System-wide risk detection settings
+            </p>
           </div>
         </div>
 
@@ -403,7 +475,9 @@ const AdminRulesSection: React.FC = () => {
             />
           </div>
           <div className="bg-white rounded-xl p-4 border border-purple-200 dark:bg-slate-900 dark:border-slate-700">
-            <label className="text-sm text-gray-600 mb-1 dark:text-slate-400">Attendance Threshold (%)</label>
+            <label className="text-sm text-gray-600 mb-1 dark:text-slate-400">
+              Attendance Threshold (%)
+            </label>
             <input
               type="number"
               value={att}
@@ -414,8 +488,15 @@ const AdminRulesSection: React.FC = () => {
           <div className="bg-white rounded-xl p-4 border border-purple-200 dark:bg-slate-900 dark:border-slate-700">
             <label className="text-sm text-gray-600 mb-2 dark:text-slate-400">Auto-run</label>
             <div className="flex items-center gap-2">
-              <input id="autorun" type="checkbox" checked={auto} onChange={(e) => setAuto(e.target.checked)} />
-              <label htmlFor="autorun" className="text-sm text-gray-700 dark:text-slate-300">Enable automatic risk runs</label>
+              <input
+                id="autorun"
+                type="checkbox"
+                checked={auto}
+                onChange={(e) => setAuto(e.target.checked)}
+              />
+              <label htmlFor="autorun" className="text-sm text-gray-700 dark:text-slate-300">
+                Enable automatic risk runs
+              </label>
             </div>
           </div>
         </div>
@@ -429,9 +510,13 @@ const AdminRulesSection: React.FC = () => {
           >
             {saveMutation.isPending ? 'Saving…' : 'Save Changes'}
           </button>
-          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-            auto ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-gray-100 text-gray-700 dark:bg-slate-800 dark:text-slate-300'
-          }`}>
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-medium ${
+              auto
+                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                : 'bg-gray-100 text-gray-700 dark:bg-slate-800 dark:text-slate-300'
+            }`}
+          >
             Auto-run: {auto ? '✓ Enabled' : '✗ Disabled'}
           </span>
         </div>

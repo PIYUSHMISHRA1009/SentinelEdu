@@ -23,7 +23,11 @@ interface DataQualityReport {
 }
 
 export default function DataQualityPage() {
-  const { data: report, isLoading, error } = useQuery<DataQualityReport>({
+  const {
+    data: report,
+    isLoading,
+    error,
+  } = useQuery<DataQualityReport>({
     queryKey: ['dataQualityReport'],
     queryFn: () => api.getDataQualityReport(),
   });
@@ -48,7 +52,8 @@ export default function DataQualityPage() {
         <div className="p-6 bg-rose-50 border border-rose-200 rounded-lg max-w-xl mx-auto text-rose-950 font-sans text-sm">
           <h3 className="font-serif text-lg font-bold">Data Quality Audit Unavailable</h3>
           <p className="mt-1 text-xs text-rose-800">
-            We couldn't retrieve the system data quality report. Please verify backend connection and authorization.
+            We couldn't retrieve the system data quality report. Please verify backend connection
+            and authorization.
           </p>
         </div>
       </div>
@@ -70,7 +75,15 @@ export default function DataQualityPage() {
         eyebrow="DATA GOVERNANCE // SYSTEM HEALTH AUDIT"
         title="Institutional Data Quality Audit"
         subtitle="Automated data integrity checks evaluating missing records, invalid grade scores, orphan enrollments, and referential database constraints."
-        dateStr={summary.check_timestamp ? new Date(summary.check_timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : undefined}
+        dateStr={
+          summary.check_timestamp
+            ? new Date(summary.check_timestamp).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+              })
+            : undefined
+        }
       />
 
       {/* Numbered Metric Strip */}

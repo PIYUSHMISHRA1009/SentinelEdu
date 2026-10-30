@@ -44,8 +44,8 @@ export const MetricCard: React.FC<MetricCardProps> = ({
                 trend.isNeutral
                   ? 'text-slate-500'
                   : trend.isPositive
-                  ? 'text-emerald-700'
-                  : 'text-rose-700'
+                    ? 'text-emerald-700'
+                    : 'text-rose-700'
               }`}
             >
               {trend.value}

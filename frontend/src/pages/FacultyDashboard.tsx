@@ -43,7 +43,9 @@ export default function FacultyDashboard() {
     queryFn: () => api.getClasses(),
   });
 
-  const { data: priorityList = [], isLoading: loadingPriority } = useQuery<InterventionPriorityItem[]>({
+  const { data: priorityList = [], isLoading: loadingPriority } = useQuery<
+    InterventionPriorityItem[]
+  >({
     queryKey: ['facultyPriority'],
     queryFn: () => api.getInterventionPriority(20),
   });
@@ -69,9 +71,10 @@ export default function FacultyDashboard() {
     );
   }
 
-  const filteredPriority = priorityList.filter((s) =>
-    s.student_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.department?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredPriority = priorityList.filter(
+    (s) =>
+      s.student_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      s.department?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -118,9 +121,7 @@ export default function FacultyDashboard() {
       {/* Assigned Course Rosters */}
       <div className="bg-white border border-stone-200/90 rounded-lg p-6 shadow-xs space-y-4">
         <div className="flex justify-between items-baseline border-b border-stone-100 pb-2">
-          <h3 className="font-serif text-xl font-medium text-slate-900">
-            Active Teaching Courses
-          </h3>
+          <h3 className="font-serif text-xl font-medium text-slate-900">Active Teaching Courses</h3>
           <span className="font-mono text-xs text-slate-400">
             {classes.length} COURSES ASSIGNED
           </span>
@@ -139,7 +140,9 @@ export default function FacultyDashboard() {
                     Sem {cls.semester}
                   </span>
                 </div>
-                <h4 className="font-serif text-base font-semibold text-slate-950 mt-1">{cls.name}</h4>
+                <h4 className="font-serif text-base font-semibold text-slate-950 mt-1">
+                  {cls.name}
+                </h4>
                 <p className="text-xs text-slate-500 mt-1">{cls.department} Department</p>
               </div>
 
@@ -228,16 +231,15 @@ export default function FacultyDashboard() {
         <div className="bg-white border border-stone-200/90 rounded-lg p-6 shadow-xs flex flex-col justify-between space-y-4">
           <div>
             <div className="flex justify-between items-baseline mb-4 pb-2 border-b border-stone-100">
-              <h3 className="font-serif text-xl font-medium text-slate-900">
-                Recent Grade Drops
-              </h3>
+              <h3 className="font-serif text-xl font-medium text-slate-900">Recent Grade Drops</h3>
               <span className="font-mono text-[10px] text-amber-800 font-semibold uppercase bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
                 Decline Alerts
               </span>
             </div>
 
             <p className="text-xs text-slate-500 mb-4 leading-relaxed">
-              Students whose last 3 assignment averages dropped by &gt;5% compared to earlier coursework.
+              Students whose last 3 assignment averages dropped by &gt;5% compared to earlier
+              coursework.
             </p>
 
             {decliningList.length === 0 ? (

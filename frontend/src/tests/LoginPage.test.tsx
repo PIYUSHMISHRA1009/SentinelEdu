@@ -38,7 +38,7 @@ describe('LoginPage', () => {
   it('shows validation errors for empty fields', async () => {
     renderLogin();
     const submitButton = screen.getByRole('button', { name: /sign in/i });
-    
+
     fireEvent.click(submitButton);
 
     await waitFor(() => {
@@ -48,13 +48,13 @@ describe('LoginPage', () => {
 
   it('validates minimum length for username and password', async () => {
     renderLogin();
-    
+
     const usernameInput = screen.getByLabelText(/username/i);
     const passwordInput = screen.getByLabelText(/password/i);
-    
+
     fireEvent.change(usernameInput, { target: { value: 'ab' } });
     fireEvent.change(passwordInput, { target: { value: '12345' } });
-    
+
     const submitButton = screen.getByRole('button', { name: /sign in/i });
     fireEvent.click(submitButton);
 

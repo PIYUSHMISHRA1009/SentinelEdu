@@ -19,7 +19,7 @@ export type UserRole = 'faculty' | 'academic_head' | 'it' | 'student';
 export interface Student {
   student_id: number;
   roll_number: string;
-  name: string;  // Backend returns single name field
+  name: string; // Backend returns single name field
   email: string;
   contact_number?: string;
   department: string;
@@ -150,10 +150,10 @@ export interface StudentsListParams {
 }
 
 export interface StudentsListResponse {
-  students: Student[];  // Changed from "data" to "students"
+  students: Student[]; // Changed from "data" to "students"
   total: number;
   page: number;
-  size: number;  // Changed from "limit" to "size"
+  size: number; // Changed from "limit" to "size"
 }
 
 export interface StudentDetailResponse {

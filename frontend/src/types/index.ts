@@ -119,12 +119,15 @@ export interface ClassAttendanceSummary {
 export interface GradeSummary {
   student_id: number;
   overall_gpa: number | null;
-  class_gpas: Record<string, {
-    gpa: number;
-    class_code: string | null;
-    class_name: string | null;
-    assignment_count: number;
-  }>;
+  class_gpas: Record<
+    string,
+    {
+      gpa: number;
+      class_code: string | null;
+      class_name: string | null;
+      assignment_count: number;
+    }
+  >;
   total_assignments: number;
 }
 

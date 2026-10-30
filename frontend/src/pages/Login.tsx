@@ -25,8 +25,8 @@ const Login: React.FC = () => {
         (data.user.role === 'student'
           ? '/student'
           : data.user.role === 'teacher'
-          ? '/faculty'
-          : '/admin');
+            ? '/faculty'
+            : '/admin');
       navigate(target, { replace: true });
     },
     onError: (err: AxiosError<{ detail?: string }>) => {

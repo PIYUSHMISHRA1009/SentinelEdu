@@ -43,7 +43,9 @@ export default function AdminDashboard() {
     queryFn: () => api.getDataQualityReport(),
   });
 
-  const { data: priorityList = [], isLoading: loadingPriority } = useQuery<InterventionPriorityItem[]>({
+  const { data: priorityList = [], isLoading: loadingPriority } = useQuery<
+    InterventionPriorityItem[]
+  >({
     queryKey: ['adminPriorityList'],
     queryFn: () => api.getInterventionPriority(20),
   });
@@ -64,9 +66,10 @@ export default function AdminDashboard() {
     );
   }
 
-  const filteredPriority = priorityList.filter((s) =>
-    s.student_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.department?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredPriority = priorityList.filter(
+    (s) =>
+      s.student_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      s.department?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -97,7 +100,9 @@ export default function AdminDashboard() {
         <MetricCard
           index="03"
           label="ATTENDANCE RATE"
-          value={summary?.avg_attendance !== undefined ? `${summary.avg_attendance.toFixed(1)}%` : 'N/A'}
+          value={
+            summary?.avg_attendance !== undefined ? `${summary.avg_attendance.toFixed(1)}%` : 'N/A'
+          }
           sublabel="Average session presence across all courses"
           accentColor="emerald"
         />
@@ -130,9 +135,20 @@ export default function AdminDashboard() {
                 <XAxis dataKey="department" tick={{ fontSize: 11, fill: '#475569' }} />
                 <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: '#475569' }} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '6px', color: '#fff', fontSize: '12px' }}
+                  contentStyle={{
+                    backgroundColor: '#0f172a',
+                    borderColor: '#1e293b',
+                    borderRadius: '6px',
+                    color: '#fff',
+                    fontSize: '12px',
+                  }}
                 />
-                <Bar dataKey="avg_score" fill="#0f172a" radius={[3, 3, 0, 0]} name="Avg Score (%)" />
+                <Bar
+                  dataKey="avg_score"
+                  fill="#0f172a"
+                  radius={[3, 3, 0, 0]}
+                  name="Avg Score (%)"
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -142,22 +158,23 @@ export default function AdminDashboard() {
         <div className="bg-white border border-stone-200/90 rounded-lg p-6 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex justify-between items-baseline mb-4 pb-2 border-b border-stone-100">
-              <h3 className="font-serif text-xl font-medium text-slate-900">
-                Data Quality Health
-              </h3>
+              <h3 className="font-serif text-xl font-medium text-slate-900">Data Quality Health</h3>
               <span className="font-mono text-[10px] text-emerald-700 font-semibold uppercase bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                 Audit Active
               </span>
             </div>
 
             <p className="text-xs text-slate-500 mb-5 leading-relaxed">
-              Automated database integrity validation checking for orphan records, duplicate attendance, and score anomalies.
+              Automated database integrity validation checking for orphan records, duplicate
+              attendance, and score anomalies.
             </p>
 
             <div className="space-y-3 font-mono text-xs">
               <div className="p-3 bg-stone-50 rounded border border-stone-200/80 flex justify-between items-center">
                 <span className="text-slate-600">Total Audit Checks</span>
-                <span className="font-bold text-slate-900">{dqReport?.summary?.total_records_checked || 0}</span>
+                <span className="font-bold text-slate-900">
+                  {dqReport?.summary?.total_records_checked || 0}
+                </span>
               </div>
               <div className="p-3 bg-emerald-50/70 rounded border border-emerald-200/80 flex justify-between items-center text-emerald-950">
                 <span>Valid Records</span>
@@ -189,7 +206,8 @@ export default function AdminDashboard() {
               Institutional Priority Interventions
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              Ranked list of students requiring immediate or urgent academic check-ins across all departments.
+              Ranked list of students requiring immediate or urgent academic check-ins across all
+              departments.
             </p>
           </div>
           <div className="w-full sm:w-64">
@@ -224,7 +242,9 @@ export default function AdminDashboard() {
                   className="hover:bg-stone-50/80 transition-colors cursor-pointer"
                   onClick={() => setSelectedStudentId(item.student_id)}
                 >
-                  <td className="py-3 px-4 font-mono font-bold text-slate-500">#{item.rank || i + 1}</td>
+                  <td className="py-3 px-4 font-mono font-bold text-slate-500">
+                    #{item.rank || i + 1}
+                  </td>
                   <td className="py-3 px-4 font-semibold text-slate-900">{item.student_name}</td>
                   <td className="py-3 px-4 text-slate-600">{item.department}</td>
                   <td className="py-3 px-4 font-mono text-slate-900 font-medium">

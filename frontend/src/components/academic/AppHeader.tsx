@@ -29,8 +29,8 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ user }) => {
   const roleLabel = isAdmin
     ? 'INSTITUTIONAL GOVERNANCE'
     : isTeacher
-    ? 'FACULTY ADVISOR WORKSPACE'
-    : 'STUDENT PORTAL';
+      ? 'FACULTY ADVISOR WORKSPACE'
+      : 'STUDENT PORTAL';
 
   return (
     <header className="bg-white border-b border-stone-200/90 shadow-xs sticky top-0 z-40">

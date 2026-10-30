@@ -13,7 +13,11 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   title,
   subtitle,
   action,
-  dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+  dateStr = new Date().toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }),
 }) => {
   return (
     <div className="border-b border-stone-200/90 pb-6 mb-8">
@@ -24,9 +28,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
               {eyebrow}
             </span>
             <span className="text-stone-300">•</span>
-            <span className="font-mono text-[11px] text-slate-400">
-              {dateStr}
-            </span>
+            <span className="font-mono text-[11px] text-slate-400">{dateStr}</span>
           </div>
           <h1 className="font-serif text-3xl md:text-4xl text-slate-950 font-medium tracking-tight mt-1.5">
             {title}
@@ -37,11 +39,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             </p>
           )}
         </div>
-        {action && (
-          <div className="flex items-center gap-3 shrink-0">
-            {action}
-          </div>
-        )}
+        {action && <div className="flex items-center gap-3 shrink-0">{action}</div>}
       </div>
     </div>
   );

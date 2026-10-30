@@ -28,21 +28,20 @@ const compactStyles = `
 
 export const Table = forwardRef<HTMLTableElement, TableProps>(
   (
-    {
-      striped = true,
-      hoverable = true,
-      compact = false,
-      className = '',
-      children,
-      ...props
-    },
+    { striped = true, hoverable = true, compact = false, className = '', children, ...props },
     ref
   ) => {
     return (
       <div className="overflow-x-auto rounded-2xl border border-slate-700">
         <table
           ref={ref}
-          className={clsx(baseStyles, striped && tableVariants.striped, hoverable && tableVariants.hoverable, compact && compactStyles, className)}
+          className={clsx(
+            baseStyles,
+            striped && tableVariants.striped,
+            hoverable && tableVariants.hoverable,
+            compact && compactStyles,
+            className
+          )}
           {...props}
         >
           {children}
@@ -55,11 +54,7 @@ Table.displayName = 'Table';
 
 export const Thead = forwardRef<HTMLTableSectionElement, HTMLAttributes<HTMLTableSectionElement>>(
   ({ className = '', children, ...props }, ref) => (
-    <thead
-      ref={ref}
-      className={clsx('bg-slate-900/80', className)}
-      {...props}
-    >
+    <thead ref={ref} className={clsx('bg-slate-900/80', className)} {...props}>
       {children}
     </thead>
   )
@@ -68,11 +63,7 @@ Thead.displayName = 'Thead';
 
 export const Tbody = forwardRef<HTMLTableSectionElement, HTMLAttributes<HTMLTableSectionElement>>(
   ({ className = '', children, ...props }, ref) => (
-    <tbody
-      ref={ref}
-      className={clsx('divide-y divide-slate-700/50', className)}
-      {...props}
-    >
+    <tbody ref={ref} className={clsx('divide-y divide-slate-700/50', className)} {...props}>
       {children}
     </tbody>
   )
@@ -81,11 +72,7 @@ Tbody.displayName = 'Tbody';
 
 export const Tr = forwardRef<HTMLTableRowElement, HTMLAttributes<HTMLTableRowElement>>(
   ({ className = '', children, ...props }, ref) => (
-    <tr
-      ref={ref}
-      className={clsx('', className)}
-      {...props}
-    >
+    <tr ref={ref} className={clsx('', className)} {...props}>
       {children}
     </tr>
   )
@@ -98,16 +85,7 @@ export interface ThProps extends HTMLAttributes<HTMLTableCellElement> {
 }
 
 export const Th = forwardRef<HTMLTableCellElement, ThProps>(
-  (
-    {
-      align = 'left',
-      width,
-      className = '',
-      children,
-      ...props
-    },
-    ref
-  ) => (
+  ({ align = 'left', width, className = '', children, ...props }, ref) => (
     <th
       ref={ref}
       scope="col"
@@ -131,15 +109,7 @@ export interface TdProps extends HTMLAttributes<HTMLTableCellElement> {
 }
 
 export const Td = forwardRef<HTMLTableCellElement, TdProps>(
-  (
-    {
-      align = 'left',
-      className = '',
-      children,
-      ...props
-    },
-    ref
-  ) => (
+  ({ align = 'left', className = '', children, ...props }, ref) => (
     <td
       ref={ref}
       className={clsx(
@@ -177,11 +147,7 @@ TableHeader.displayName = 'TableHeader';
 export interface TableCellProps extends HTMLAttributes<HTMLTableCellElement> {}
 export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
   ({ className = '', children, ...props }, ref) => (
-    <td
-      ref={ref}
-      className={clsx('px-4 py-3 text-slate-100', className)}
-      {...props}
-    >
+    <td ref={ref} className={clsx('px-4 py-3 text-slate-100', className)} {...props}>
       {children}
     </td>
   )

@@ -7,7 +7,13 @@ import { Loading } from '@/components/Loading';
 import { FadeIn } from '@/components/Motion/FadeIn';
 import { StaggerContainer, StaggerItem } from '@/components/Motion/StaggerContainer';
 import { AnimatedCounter } from '@/components/Motion/AnimatedCounter';
-import { AcademicCapIcon, ChartBarIcon, ExclamationTriangleIcon, ChatBubbleLeftRightIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
+import {
+  AcademicCapIcon,
+  ChartBarIcon,
+  ExclamationTriangleIcon,
+  ChatBubbleLeftRightIcon,
+  ClipboardDocumentListIcon,
+} from '@heroicons/react/24/outline';
 import { TiltCard } from '@/components/Motion/TiltCard';
 
 export const StudentDashboardPage: React.FC = () => {
@@ -15,9 +21,11 @@ export const StudentDashboardPage: React.FC = () => {
   const { data: profile, isLoading: profLoading } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
-      const res = await axiosClient.get<ApiResponse<any>>(API_ENDPOINTS.CONTACT.replace('/contact','/profile'));
+      const res = await axiosClient.get<ApiResponse<any>>(
+        API_ENDPOINTS.CONTACT.replace('/contact', '/profile')
+      );
       return res.data.data;
-    }
+    },
   });
 
   const sid = (profile as any)?.student_id as number | undefined;
@@ -56,7 +64,9 @@ export const StudentDashboardPage: React.FC = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-500 dark:text-slate-400">GPA</p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-slate-100"><AnimatedCounter value={avgGpa} decimals={2} /></p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-slate-100">
+                  <AnimatedCounter value={avgGpa} decimals={2} />
+                </p>
               </div>
             </div>
           </div>
@@ -69,7 +79,9 @@ export const StudentDashboardPage: React.FC = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-500 dark:text-slate-400">Attendance</p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-slate-100"><AnimatedCounter value={avgAttendance} decimals={1} suffix="%" /></p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-slate-100">
+                  <AnimatedCounter value={avgAttendance} decimals={1} suffix="%" />
+                </p>
               </div>
             </div>
           </div>
@@ -82,7 +94,11 @@ export const StudentDashboardPage: React.FC = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-500 dark:text-slate-400">Risk Status</p>
-                <p className={`text-3xl font-bold ${isAtRisk ? 'text-red-600' : 'text-emerald-600'}`}>{isAtRisk ? 'At Risk' : 'Good'}</p>
+                <p
+                  className={`text-3xl font-bold ${isAtRisk ? 'text-red-600' : 'text-emerald-600'}`}
+                >
+                  {isAtRisk ? 'At Risk' : 'Good'}
+                </p>
               </div>
             </div>
           </div>
@@ -98,7 +114,9 @@ export const StudentDashboardPage: React.FC = () => {
             </div>
             <div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-slate-100">Interventions</h3>
-              <p className="text-sm text-gray-500 dark:text-slate-400">{interventions.length} total</p>
+              <p className="text-sm text-gray-500 dark:text-slate-400">
+                {interventions.length} total
+              </p>
             </div>
           </div>
           {interventions.length === 0 ? (
@@ -109,8 +127,12 @@ export const StudentDashboardPage: React.FC = () => {
                 <TiltCard key={i.intervention_id}>
                   <div className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 dark:bg-slate-800 dark:border-slate-700 dark:from-slate-800 dark:to-slate-700">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-600 text-white">{i.intervention_type}</span>
-                      <span className="text-xs text-gray-500 dark:text-slate-400">{new Date(i.created_on).toLocaleDateString()}</span>
+                      <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-600 text-white">
+                        {i.intervention_type}
+                      </span>
+                      <span className="text-xs text-gray-500 dark:text-slate-400">
+                        {new Date(i.created_on).toLocaleDateString()}
+                      </span>
                     </div>
                     <p className="text-sm text-gray-800 dark:text-slate-200">{i.notes}</p>
                   </div>
@@ -127,7 +149,9 @@ export const StudentDashboardPage: React.FC = () => {
             </div>
             <div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-slate-100">Your Feedback</h3>
-              <p className="text-sm text-gray-500 dark:text-slate-400">{feedbacks.length} entries</p>
+              <p className="text-sm text-gray-500 dark:text-slate-400">
+                {feedbacks.length} entries
+              </p>
             </div>
           </div>
           {feedbacks.length === 0 ? (
@@ -137,11 +161,21 @@ export const StudentDashboardPage: React.FC = () => {
               {feedbacks.map((f: any) => (
                 <TiltCard key={f.feedback_id}>
                   <div className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 dark:bg-slate-800 dark:border-slate-700 dark:from-slate-800 dark:to-slate-700">
-                    <p className="text-sm text-gray-800 mb-2 dark:text-slate-200">{f.feedback_text}</p>
+                    <p className="text-sm text-gray-800 mb-2 dark:text-slate-200">
+                      {f.feedback_text}
+                    </p>
                     {f.sentiment && (
-                      <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
-                        f.sentiment === 'positive' ? 'bg-emerald-600 text-white' : f.sentiment === 'negative' ? 'bg-red-600 text-white' : 'bg-gray-300 text-gray-800'
-                      }`}>{f.sentiment}</span>
+                      <span
+                        className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
+                          f.sentiment === 'positive'
+                            ? 'bg-emerald-600 text-white'
+                            : f.sentiment === 'negative'
+                              ? 'bg-red-600 text-white'
+                              : 'bg-gray-300 text-gray-800'
+                        }`}
+                      >
+                        {f.sentiment}
+                      </span>
                     )}
                   </div>
                 </TiltCard>

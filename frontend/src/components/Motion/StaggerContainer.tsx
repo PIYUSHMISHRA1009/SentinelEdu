@@ -12,10 +12,10 @@ interface StaggerContainerProps {
   staggerDelay?: number;
 }
 
-export const StaggerContainer: React.FC<StaggerContainerProps> = ({ 
-  children, 
+export const StaggerContainer: React.FC<StaggerContainerProps> = ({
+  children,
   className,
-  staggerDelay = 0.1 
+  staggerDelay = 0.1,
 }) => {
   const container = {
     hidden: { opacity: 0 },
@@ -28,31 +28,26 @@ export const StaggerContainer: React.FC<StaggerContainerProps> = ({
   };
 
   return (
-    <motion.div
-      variants={container}
-      initial="hidden"
-      animate="show"
-      className={className}
-    >
+    <motion.div variants={container} initial="hidden" animate="show" className={className}>
       {children}
     </motion.div>
   );
 };
 
-export const StaggerItem: React.FC<{ children: React.ReactNode; className?: string }> = ({ 
-  children, 
-  className 
+export const StaggerItem: React.FC<{ children: React.ReactNode; className?: string }> = ({
+  children,
+  className,
 }) => {
   const item = {
     hidden: { opacity: 0, y: 20 },
-    show: { 
-      opacity: 1, 
+    show: {
+      opacity: 1,
       y: 0,
       transition: {
         type: 'spring',
         stiffness: 100,
-        damping: 12
-      }
+        damping: 12,
+      },
     },
   };
 

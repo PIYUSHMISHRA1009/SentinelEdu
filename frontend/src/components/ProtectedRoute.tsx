@@ -17,10 +17,7 @@ interface ProtectedRouteProps {
  * Wraps routes that require authentication and/or specific roles
  * Redirects to login if not authenticated, or to unauthorized page if role doesn't match
  */
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
-  children,
-  allowedRoles,
-}) => {
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
   const { isAuthenticated, role, isLoading } = useAuth();
 
   if (isLoading) {

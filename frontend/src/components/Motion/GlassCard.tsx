@@ -23,9 +23,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   };
 
   return (
-    <div
-      className={`rounded-2xl border ${intensityClasses[intensity]} shadow-xl ${className}`}
-    >
+    <div className={`rounded-2xl border ${intensityClasses[intensity]} shadow-xl ${className}`}>
       {children}
     </div>
   );

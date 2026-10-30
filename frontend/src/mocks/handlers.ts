@@ -54,8 +54,20 @@ export const handlers = [
 
     // Mock authentication logic
     const validUsers = [
-      { username: 'faculty', password: 'faculty123', role: 'faculty' as const, id: 1, name: 'Dr. Rajesh Kumar' },
-      { username: 'admin', password: 'admin123', role: 'academic_head' as const, id: 2, name: 'Prof. Meera Iyer' },
+      {
+        username: 'faculty',
+        password: 'faculty123',
+        role: 'faculty' as const,
+        id: 1,
+        name: 'Dr. Rajesh Kumar',
+      },
+      {
+        username: 'admin',
+        password: 'admin123',
+        role: 'academic_head' as const,
+        id: 2,
+        name: 'Prof. Meera Iyer',
+      },
       { username: 'itadmin', password: 'itadmin123', role: 'it' as const, id: 3, name: 'IT Admin' },
     ];
 
@@ -110,7 +122,7 @@ export const handlers = [
 
     // Apply department filter
     if (department) {
-  filtered = filtered.filter((s: any) => s.department === department);
+      filtered = filtered.filter((s: any) => s.department === department);
     }
 
     const total = filtered.length;
@@ -136,10 +148,7 @@ export const handlers = [
     const student = mockStudents.find((s: any) => s.student_id === studentId);
 
     if (!student) {
-      return HttpResponse.json(
-        { success: false, error: 'Student not found' },
-        { status: 404 }
-      );
+      return HttpResponse.json({ success: false, error: 'Student not found' }, { status: 404 });
     }
 
     const enrollments = mockEnrollments.filter((e) => e.student_id === studentId);
@@ -239,7 +248,7 @@ export const handlers = [
       created_on: new Date().toISOString(),
     };
 
-  (mockInterventions as any[]).push(newIntervention);
+    (mockInterventions as any[]).push(newIntervention);
 
     return HttpResponse.json({
       success: true,
@@ -415,7 +424,8 @@ export const handlers = [
       department: f.department,
       username: `faculty${index + 1}`,
       last_plaintext_password: index % 2 === 0 ? `ResetPass${index + 1}!` : undefined,
-      last_reset_on: index % 2 === 0 ? new Date(Date.now() - (index + 2) * 7200000).toISOString() : undefined,
+      last_reset_on:
+        index % 2 === 0 ? new Date(Date.now() - (index + 2) * 7200000).toISOString() : undefined,
       created_on: new Date(Date.now() - (index + 10) * 86400000).toISOString(),
       last_login: new Date(Date.now() - (index + 3) * 7200000).toISOString(),
     }));
@@ -435,7 +445,8 @@ export const handlers = [
       student_id: mockStudents[idx % mockStudents.length]?.student_id,
       username: `student${(idx % mockStudents.length) + 1}`,
       event_type: idx % 2 === 0 ? 'ACCOUNT_CREATED' : 'PASSWORD_RESET',
-      description: idx % 2 === 0 ? 'New account provisioned via mock API' : 'Temporary password regenerated',
+      description:
+        idx % 2 === 0 ? 'New account provisioned via mock API' : 'Temporary password regenerated',
       created_on: new Date(Date.now() - idx * 3600000).toISOString(),
     }));
     return HttpResponse.json({

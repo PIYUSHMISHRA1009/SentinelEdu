@@ -23,14 +23,17 @@ export const Header: React.FC = () => {
   const { data: riskSummary } = useQuery({
     queryKey: ['risk-summary'],
     queryFn: async () => {
-      const res = await axiosClient.get<{ success: boolean; data: { flaggedCount: number } }>(API_ENDPOINTS.DASHBOARD_RISK_SUMMARY.replace('/dashboard','/risk'));
+      const res = await axiosClient.get<{ success: boolean; data: { flaggedCount: number } }>(
+        API_ENDPOINTS.DASHBOARD_RISK_SUMMARY.replace('/dashboard', '/risk')
+      );
       return res.data.data;
     },
     enabled: isAuthenticated && (role === 'faculty' || role === 'academic_head'),
     refetchInterval: 30000,
   });
 
-  const navButtonClass = 'rounded-full border border-transparent px-3 py-1 text-xs font-semibold tracking-wide text-slate-600 transition hover:border-primary-500 hover:bg-primary-50 hover:text-primary-600 dark:text-slate-200 dark:hover:border-primary-400 dark:hover:bg-slate-800 dark:hover:text-white';
+  const navButtonClass =
+    'rounded-full border border-transparent px-3 py-1 text-xs font-semibold tracking-wide text-slate-600 transition hover:border-primary-500 hover:bg-primary-50 hover:text-primary-600 dark:text-slate-200 dark:hover:border-primary-400 dark:hover:bg-slate-800 dark:hover:text-white';
 
   const handleLogout = () => {
     logout();
@@ -52,7 +55,12 @@ export const Header: React.FC = () => {
           if (prevFlagged.current != null && nextCount > prevFlagged.current) {
             const increment = nextCount - (prevFlagged.current || 0);
             addToast(`New risk alerts detected (${increment}).`, 'warning');
-            setNotifications((prev) => [{ id: Date.now(), text: `Risk alerts increased by ${increment}`, ts: Date.now() }, ...prev].slice(0, 20));
+            setNotifications((prev) =>
+              [
+                { id: Date.now(), text: `Risk alerts increased by ${increment}`, ts: Date.now() },
+                ...prev,
+              ].slice(0, 20)
+            );
           }
           prevFlagged.current = nextCount;
         } catch (parseError) {
@@ -71,7 +79,9 @@ export const Header: React.FC = () => {
   const { data: notifData } = useQuery({
     queryKey: ['notifications', username],
     queryFn: async () => {
-      const res = await axiosClient.get<{ success: boolean; data: any[] }>(API_ENDPOINTS.NOTIFICATIONS);
+      const res = await axiosClient.get<{ success: boolean; data: any[] }>(
+        API_ENDPOINTS.NOTIFICATIONS
+      );
       return res.data.data || [];
     },
     enabled: isAuthenticated,
@@ -100,14 +110,18 @@ export const Header: React.FC = () => {
   }, [isAuthenticated, username]);
   useEffect(() => {
     if (!notifData) return;
-    const mapped: NotificationItem[] = notifData.map((n: any) => ({ id: n.notification_id, text: n.title || n.message, ts: n.created_on ? Date.parse(n.created_on) : undefined }));
+    const mapped: NotificationItem[] = notifData.map((n: any) => ({
+      id: n.notification_id,
+      text: n.title || n.message,
+      ts: n.created_on ? Date.parse(n.created_on) : undefined,
+    }));
     // Detect new notifications and show toasts only once per ID (persisted)
     const seen = lastIdsRef.current;
     const dismissed = dismissedIdsRef.current;
-    const unseen = mapped.filter(m => !seen.has(m.id) && !dismissed.has(m.id));
-    unseen.forEach(m => addToast(m.text || 'New notification', 'info'));
+    const unseen = mapped.filter((m) => !seen.has(m.id) && !dismissed.has(m.id));
+    unseen.forEach((m) => addToast(m.text || 'New notification', 'info'));
     // Update seen set and persist (cap to recent 200 ids)
-    const allIds = Array.from(new Set([...Array.from(seen), ...mapped.map(m => m.id)]));
+    const allIds = Array.from(new Set([...Array.from(seen), ...mapped.map((m) => m.id)]));
     const capped = allIds.slice(-200);
     lastIdsRef.current = new Set(capped);
     try {
@@ -115,7 +129,7 @@ export const Header: React.FC = () => {
     } catch (persistError) {
       console.warn('Failed to persist seen notification ids', persistError);
     }
-    const filtered = mapped.filter(m => !dismissed.has(m.id));
+    const filtered = mapped.filter((m) => !dismissed.has(m.id));
     setNotifications(filtered);
   }, [notifData, addToast, username]);
 
@@ -144,8 +158,12 @@ export const Header: React.FC = () => {
           >
             <img src="/logo.png" alt="InsightFlow EDU" className="h-10 w-10 object-contain" />
             <div className="flex flex-col leading-tight">
-              <span className="text-base font-bold tracking-tight text-slate-900 dark:text-white">InsightFlow EDU</span>
-              <span className="text-[11px] font-medium text-slate-500 dark:text-slate-300">Student Analytics</span>
+              <span className="text-base font-bold tracking-tight text-slate-900 dark:text-white">
+                InsightFlow EDU
+              </span>
+              <span className="text-[11px] font-medium text-slate-500 dark:text-slate-300">
+                Student Analytics
+              </span>
             </div>
           </div>
 
@@ -217,7 +235,9 @@ export const Header: React.FC = () => {
             <>
               <div className="hidden items-center gap-2 rounded-full border border-slate-200/70 bg-white/60 px-3 py-1 text-slate-700 backdrop-blur-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:flex">
                 <UserCircleIcon className="h-5 w-5 text-slate-500 dark:text-gray-300" />
-                <span className="text-sm font-medium text-slate-800 dark:text-gray-100">{user?.name || user?.username}</span>
+                <span className="text-sm font-medium text-slate-800 dark:text-gray-100">
+                  {user?.name || user?.username}
+                </span>
                 <span className="text-[11px] text-slate-500 dark:text-gray-400">{role}</span>
               </div>
               <NotificationsBell
@@ -229,10 +249,15 @@ export const Header: React.FC = () => {
                       clearedIds.forEach((id) => dismissedIdsRef.current.add(id));
                       const dismissedToStore = Array.from(dismissedIdsRef.current).slice(-200);
                       dismissedIdsRef.current = new Set(dismissedToStore);
-                      const seenUnion = Array.from(new Set([...Array.from(lastIdsRef.current), ...clearedIds])).slice(-200);
+                      const seenUnion = Array.from(
+                        new Set([...Array.from(lastIdsRef.current), ...clearedIds])
+                      ).slice(-200);
                       lastIdsRef.current = new Set(seenUnion);
                       localStorage.setItem(`notif_seen:${username}`, JSON.stringify(seenUnion));
-                      localStorage.setItem(`notif_dismissed:${username}`, JSON.stringify(dismissedToStore));
+                      localStorage.setItem(
+                        `notif_dismissed:${username}`,
+                        JSON.stringify(dismissedToStore)
+                      );
                     }
                   } catch (clearError) {
                     console.warn('Failed to update stored notification state', clearError);

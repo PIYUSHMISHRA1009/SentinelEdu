@@ -49,35 +49,16 @@ const dotColors = {
 };
 
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
-  (
-    {
-      variant = 'neutral',
-      size = 'md',
-      dot = false,
-      className = '',
-      children,
-      ...props
-    },
-    ref
-  ) => {
+  ({ variant = 'neutral', size = 'md', dot = false, className = '', children, ...props }, ref) => {
     return (
       <span
         ref={ref}
-        className={clsx(
-          baseStyles,
-          variants[variant],
-          sizes[size],
-          className
-        )}
+        className={clsx(baseStyles, variants[variant], sizes[size], className)}
         {...props}
       >
         {dot && (
           <span
-            className={clsx(
-              'rounded-full animate-pulse',
-              dotSizes[size],
-              dotColors[variant]
-            )}
+            className={clsx('rounded-full animate-pulse', dotSizes[size], dotColors[variant])}
             aria-hidden="true"
           />
         )}

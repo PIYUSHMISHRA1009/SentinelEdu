@@ -44,7 +44,13 @@ export default function StudentDashboard() {
     enabled: !!studentId,
   });
 
-  const isLoading = loadingUser || loadingSummary || loadingGrades || loadingAttendance || loadingRisk || loadingClasses;
+  const isLoading =
+    loadingUser ||
+    loadingSummary ||
+    loadingGrades ||
+    loadingAttendance ||
+    loadingRisk ||
+    loadingClasses;
 
   if (isLoading) {
     return (
@@ -65,18 +71,35 @@ export default function StudentDashboard() {
   const attendedSessions = attendanceList.filter(
     (a) => a.status === 'present' || a.status === 'late' || a.status === 'excused'
   ).length;
-  const attendanceRate = totalSessions > 0 ? ((attendedSessions / totalSessions) * 100).toFixed(1) : 'N/A';
+  const attendanceRate =
+    totalSessions > 0 ? ((attendedSessions / totalSessions) * 100).toFixed(1) : 'N/A';
 
   const statusBadge = (status: string) => {
     switch (status) {
       case 'present':
-        return <span className="px-2 py-0.5 rounded font-mono text-[10px] uppercase font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">Present</span>;
+        return (
+          <span className="px-2 py-0.5 rounded font-mono text-[10px] uppercase font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+            Present
+          </span>
+        );
       case 'late':
-        return <span className="px-2 py-0.5 rounded font-mono text-[10px] uppercase font-semibold bg-amber-50 text-amber-900 border border-amber-200">Late</span>;
+        return (
+          <span className="px-2 py-0.5 rounded font-mono text-[10px] uppercase font-semibold bg-amber-50 text-amber-900 border border-amber-200">
+            Late
+          </span>
+        );
       case 'absent':
-        return <span className="px-2 py-0.5 rounded font-mono text-[10px] uppercase font-semibold bg-rose-50 text-rose-900 border border-rose-200">Absent</span>;
+        return (
+          <span className="px-2 py-0.5 rounded font-mono text-[10px] uppercase font-semibold bg-rose-50 text-rose-900 border border-rose-200">
+            Absent
+          </span>
+        );
       default:
-        return <span className="px-2 py-0.5 rounded font-mono text-[10px] uppercase font-semibold bg-slate-100 text-slate-700 border border-stone-200">Excused</span>;
+        return (
+          <span className="px-2 py-0.5 rounded font-mono text-[10px] uppercase font-semibold bg-slate-100 text-slate-700 border border-stone-200">
+            Excused
+          </span>
+        );
     }
   };
 
@@ -102,7 +125,11 @@ export default function StudentDashboard() {
         <MetricCard
           index="01"
           label="OVERALL GPA (4.0 SCALE)"
-          value={gradeSummary?.overall_gpa !== null && gradeSummary?.overall_gpa !== undefined ? gradeSummary.overall_gpa.toFixed(2) : 'N/A'}
+          value={
+            gradeSummary?.overall_gpa !== null && gradeSummary?.overall_gpa !== undefined
+              ? gradeSummary.overall_gpa.toFixed(2)
+              : 'N/A'
+          }
           sublabel="Weighted grade point average across courses"
           accentColor="indigo"
         />
@@ -151,16 +178,24 @@ export default function StudentDashboard() {
                 <div>
                   <div className="flex justify-between items-center mb-1">
                     <span className="font-mono text-xs font-bold text-slate-900">{cls.code}</span>
-                    <span className="font-mono text-[10px] text-slate-500">{cls.credits} Credits</span>
+                    <span className="font-mono text-[10px] text-slate-500">
+                      {cls.credits} Credits
+                    </span>
                   </div>
-                  <h4 className="font-serif text-base font-semibold text-slate-950 mt-1">{cls.name}</h4>
-                  <p className="text-xs text-slate-500 mt-1">Instructor: {cls.teacher_name || 'Faculty Member'}</p>
+                  <h4 className="font-serif text-base font-semibold text-slate-950 mt-1">
+                    {cls.name}
+                  </h4>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Instructor: {cls.teacher_name || 'Faculty Member'}
+                  </p>
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-stone-200/80 flex justify-between items-center text-xs font-mono">
                   <span className="text-slate-600">Course Grade:</span>
                   <span className="font-bold text-slate-950">
-                    {classGpaInfo?.gpa !== undefined ? `${classGpaInfo.gpa.toFixed(2)} GPA` : 'Pending'}
+                    {classGpaInfo?.gpa !== undefined
+                      ? `${classGpaInfo.gpa.toFixed(2)} GPA`
+                      : 'Pending'}
                   </span>
                 </div>
               </div>
@@ -174,12 +209,8 @@ export default function StudentDashboard() {
         {/* Assignment Grades Table */}
         <div className="bg-white border border-stone-200/90 rounded-lg p-6 shadow-xs space-y-4">
           <div className="flex justify-between items-baseline pb-2 border-b border-stone-100">
-            <h3 className="font-serif text-xl font-medium text-slate-900">
-              Evaluated Assignments
-            </h3>
-            <span className="font-mono text-xs text-slate-400">
-              LOGGED GRADE RECORDS
-            </span>
+            <h3 className="font-serif text-xl font-medium text-slate-900">Evaluated Assignments</h3>
+            <span className="font-mono text-xs text-slate-400">LOGGED GRADE RECORDS</span>
           </div>
 
           {grades.length === 0 ? (
@@ -200,9 +231,13 @@ export default function StudentDashboard() {
                 <tbody className="divide-y divide-stone-100">
                   {grades.slice(0, 8).map((g) => (
                     <tr key={g.id} className="hover:bg-stone-50/80 transition-colors">
-                      <td className="py-2.5 px-3 font-semibold text-slate-900">{g.assignment_name}</td>
+                      <td className="py-2.5 px-3 font-semibold text-slate-900">
+                        {g.assignment_name}
+                      </td>
                       <td className="py-2.5 px-3 font-mono text-slate-600">{g.class_code}</td>
-                      <td className="py-2.5 px-3 font-mono text-slate-700">{g.score} / {g.max_score}</td>
+                      <td className="py-2.5 px-3 font-mono text-slate-700">
+                        {g.score} / {g.max_score}
+                      </td>
                       <td className="py-2.5 px-3 font-mono font-bold text-slate-950 text-right">
                         {g.percentage.toFixed(1)}%
                       </td>
@@ -220,9 +255,7 @@ export default function StudentDashboard() {
             <h3 className="font-serif text-xl font-medium text-slate-900">
               Session Attendance Log
             </h3>
-            <span className="font-mono text-xs text-slate-400">
-              RECENT SESSIONS
-            </span>
+            <span className="font-mono text-xs text-slate-400">RECENT SESSIONS</span>
           </div>
 
           {attendanceList.length === 0 ? (
@@ -243,9 +276,15 @@ export default function StudentDashboard() {
                   {attendanceList.slice(0, 8).map((a) => (
                     <tr key={a.id} className="hover:bg-stone-50/80 transition-colors">
                       <td className="py-2.5 px-3 font-mono text-slate-900">
-                        {new Date(a.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        {new Date(a.date).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
                       </td>
-                      <td className="py-2.5 px-3 font-mono text-slate-600">{a.class_code || 'Course'}</td>
+                      <td className="py-2.5 px-3 font-mono text-slate-600">
+                        {a.class_code || 'Course'}
+                      </td>
                       <td className="py-2.5 px-3 text-right">{statusBadge(a.status)}</td>
                     </tr>
                   ))}

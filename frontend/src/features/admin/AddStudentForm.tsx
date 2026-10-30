@@ -22,16 +22,13 @@ export const AddStudentForm: React.FC<AddStudentFormProps> = ({ onSuccess, onCan
     email: '',
     department: '',
     semester: 1,
-    contactNumber: ''
+    contactNumber: '',
   });
   const [creds, setCreds] = useState<{ username: string; password: string } | null>(null);
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      const response = await axiosClient.post<ApiResponse<any>>(
-        API_ENDPOINTS.STUDENTS,
-        data
-      );
+      const response = await axiosClient.post<ApiResponse<any>>(API_ENDPOINTS.STUDENTS, data);
       if (!response.data.success) {
         throw new Error(response.data.error || 'Failed to create student');
       }
@@ -45,7 +42,7 @@ export const AddStudentForm: React.FC<AddStudentFormProps> = ({ onSuccess, onCan
         email: '',
         department: '',
         semester: 1,
-        contactNumber: ''
+        contactNumber: '',
       });
       if (resp?.data?.student_username && resp?.data?.student_password) {
         setCreds({ username: resp.data.student_username, password: resp.data.student_password });
@@ -53,7 +50,7 @@ export const AddStudentForm: React.FC<AddStudentFormProps> = ({ onSuccess, onCan
         setCreds(null);
       }
       onSuccess?.();
-    }
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -71,17 +68,17 @@ export const AddStudentForm: React.FC<AddStudentFormProps> = ({ onSuccess, onCan
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: name === 'semester' ? parseInt(value) : value
+      [name]: name === 'semester' ? parseInt(value) : value,
     }));
   };
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Add New Student</h2>
-      
-  <form onSubmit={handleSubmit} className="space-y-4">
+
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Roll Number */}
           <div>
@@ -171,8 +168,10 @@ export const AddStudentForm: React.FC<AddStudentFormProps> = ({ onSuccess, onCan
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-mint-500 focus:border-mint-500"
             >
-              {[1, 2, 3, 4, 5, 6, 7, 8].map(sem => (
-                <option key={sem} value={sem}>Semester {sem}</option>
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
+                <option key={sem} value={sem}>
+                  Semester {sem}
+                </option>
               ))}
             </select>
           </div>
@@ -199,7 +198,9 @@ export const AddStudentForm: React.FC<AddStudentFormProps> = ({ onSuccess, onCan
         {/* Error Message */}
         {createMutation.isError && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-            {createMutation.error instanceof Error ? createMutation.error.message : 'Failed to create student'}
+            {createMutation.error instanceof Error
+              ? createMutation.error.message
+              : 'Failed to create student'}
           </div>
         )}
 
@@ -213,16 +214,35 @@ export const AddStudentForm: React.FC<AddStudentFormProps> = ({ onSuccess, onCan
                 <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-3 items-center">
                   <div className="flex items-center gap-2">
                     <span className="text-xs uppercase text-gray-500">Username:</span>
-                    <code className="px-2 py-1 bg-gray-100 rounded text-gray-800">{creds.username}</code>
-                    <button type="button" className="text-xs text-cyan-700 hover:underline" onClick={()=> navigator.clipboard.writeText(creds.username)}>Copy</button>
+                    <code className="px-2 py-1 bg-gray-100 rounded text-gray-800">
+                      {creds.username}
+                    </code>
+                    <button
+                      type="button"
+                      className="text-xs text-cyan-700 hover:underline"
+                      onClick={() => navigator.clipboard.writeText(creds.username)}
+                    >
+                      Copy
+                    </button>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs uppercase text-gray-500">Password:</span>
-                    <code className="px-2 py-1 bg-gray-100 rounded text-gray-800">{creds.password}</code>
-                    <button type="button" className="text-xs text-cyan-700 hover:underline" onClick={()=> navigator.clipboard.writeText(creds.password)}>Copy</button>
+                    <code className="px-2 py-1 bg-gray-100 rounded text-gray-800">
+                      {creds.password}
+                    </code>
+                    <button
+                      type="button"
+                      className="text-xs text-cyan-700 hover:underline"
+                      onClick={() => navigator.clipboard.writeText(creds.password)}
+                    >
+                      Copy
+                    </button>
                   </div>
                 </div>
-                <div className="text-[10px] text-gray-600 mt-2">Please share securely with the student and prompt them to change the password after first login.</div>
+                <div className="text-[10px] text-gray-600 mt-2">
+                  Please share securely with the student and prompt them to change the password
+                  after first login.
+                </div>
               </div>
             )}
           </div>

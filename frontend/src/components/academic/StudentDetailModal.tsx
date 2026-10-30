@@ -2,7 +2,15 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../api/client';
 import { RiskBadge, PriorityBadge } from './StatusBadges';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 
 interface StudentDetailModalProps {
   studentId: number | null;
@@ -43,17 +51,18 @@ export const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
   const isLoading = loadingRisk || loadingTrends;
 
   // Format trend points for chart if available
-  const chartPoints = trendData?.gpa_history?.map((pt, idx) => ({
-    session: pt.date || `P${idx + 1}`,
-    gpa: pt.gpa || pt.score || 0,
-    attendance: trendData?.attendance_history?.[idx]?.attendance_rate || 85,
-  })) || [];
+  const chartPoints =
+    trendData?.gpa_history?.map((pt, idx) => ({
+      session: pt.date || `P${idx + 1}`,
+      gpa: pt.gpa || pt.score || 0,
+      attendance: trendData?.attendance_history?.[idx]?.attendance_rate || 85,
+    })) || [];
 
   const factorsList: string[] = Array.isArray(riskData?.factors)
     ? riskData.factors
     : typeof riskData?.factors === 'string'
-    ? JSON.parse(riskData.factors || '[]')
-    : [];
+      ? JSON.parse(riskData.factors || '[]')
+      : [];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-fade-in">
@@ -66,9 +75,7 @@ export const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
                 STUDENT PROFILE & ACADEMIC AUDIT
               </span>
               <span className="text-slate-600">•</span>
-              <span className="font-mono text-[10px] text-slate-400">
-                ID #{studentId}
-              </span>
+              <span className="font-mono text-[10px] text-slate-400">ID #{studentId}</span>
             </div>
             <h2 className="font-serif text-2xl font-semibold tracking-tight">
               {riskData?.student_name || studentName || `Student #${studentId}`}
@@ -78,9 +85,7 @@ export const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
             </p>
           </div>
           <div className="flex items-center gap-3">
-            {riskData && (
-              <RiskBadge level={riskData.risk_level} score={riskData.risk_score} />
-            )}
+            {riskData && <RiskBadge level={riskData.risk_level} score={riskData.risk_score} />}
             <button
               onClick={onClose}
               className="text-slate-400 hover:text-white p-1 rounded-md text-lg leading-none transition-colors"
@@ -133,7 +138,9 @@ export const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
                   }`}
                 >
                   {riskData?.gpa_trend !== undefined
-                    ? (riskData.gpa_trend > 0 ? `+${riskData.gpa_trend.toFixed(3)}` : riskData.gpa_trend.toFixed(3))
+                    ? riskData.gpa_trend > 0
+                      ? `+${riskData.gpa_trend.toFixed(3)}`
+                      : riskData.gpa_trend.toFixed(3)
                     : '0.00'}
                 </span>
               </div>
@@ -217,12 +224,20 @@ export const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
 
                 <div className="grid grid-cols-2 gap-4 text-xs font-mono text-slate-300">
                   <div>
-                    <span className="text-slate-400 block text-[10px] uppercase">Review Cadence</span>
-                    <span className="font-semibold text-white">{riskData.intervention.review_frequency}</span>
+                    <span className="text-slate-400 block text-[10px] uppercase">
+                      Review Cadence
+                    </span>
+                    <span className="font-semibold text-white">
+                      {riskData.intervention.review_frequency}
+                    </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[10px] uppercase">Escalation Path</span>
-                    <span className="font-semibold text-white">{riskData.intervention.escalation}</span>
+                    <span className="text-slate-400 block text-[10px] uppercase">
+                      Escalation Path
+                    </span>
+                    <span className="font-semibold text-white">
+                      {riskData.intervention.escalation}
+                    </span>
                   </div>
                 </div>
 

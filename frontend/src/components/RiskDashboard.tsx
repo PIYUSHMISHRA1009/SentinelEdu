@@ -167,7 +167,9 @@ export default function RiskDashboard() {
         {isLoading ? (
           <div className="p-12 flex flex-col items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900 mb-2" />
-            <span className="font-mono text-xs text-slate-500">Loading risk score assessments...</span>
+            <span className="font-mono text-xs text-slate-500">
+              Loading risk score assessments...
+            </span>
           </div>
         ) : filteredStudents.length === 0 ? (
           <p className="text-xs text-slate-500 font-mono italic p-6 text-center bg-stone-50 rounded">
@@ -203,19 +205,31 @@ export default function RiskDashboard() {
                       <RiskBadge level={s.risk_level} score={s.risk_score ?? undefined} size="sm" />
                     </td>
                     <td className="py-3 px-4 font-mono font-bold text-slate-900">
-                      {s.risk_score !== null && s.risk_score !== undefined ? s.risk_score.toFixed(3) : 'N/A'}
+                      {s.risk_score !== null && s.risk_score !== undefined
+                        ? s.risk_score.toFixed(3)
+                        : 'N/A'}
                     </td>
                     <td className="py-3 px-4 font-mono font-medium">
-                      <span className={(s.gpa_trend ?? 0) < 0 ? 'text-rose-700' : 'text-emerald-700'}>
+                      <span
+                        className={(s.gpa_trend ?? 0) < 0 ? 'text-rose-700' : 'text-emerald-700'}
+                      >
                         {s.gpa_trend !== null && s.gpa_trend !== undefined
-                          ? (s.gpa_trend > 0 ? `+${s.gpa_trend.toFixed(3)}` : s.gpa_trend.toFixed(3))
+                          ? s.gpa_trend > 0
+                            ? `+${s.gpa_trend.toFixed(3)}`
+                            : s.gpa_trend.toFixed(3)
                           : '0.00'}
                       </span>
                     </td>
                     <td className="py-3 px-4 font-mono font-medium">
-                      <span className={(s.attendance_trend ?? 0) < 0 ? 'text-rose-700' : 'text-emerald-700'}>
+                      <span
+                        className={
+                          (s.attendance_trend ?? 0) < 0 ? 'text-rose-700' : 'text-emerald-700'
+                        }
+                      >
                         {s.attendance_trend !== null && s.attendance_trend !== undefined
-                          ? (s.attendance_trend > 0 ? `+${s.attendance_trend.toFixed(3)}` : s.attendance_trend.toFixed(3))
+                          ? s.attendance_trend > 0
+                            ? `+${s.attendance_trend.toFixed(3)}`
+                            : s.attendance_trend.toFixed(3)
                           : '0.00'}
                       </span>
                     </td>

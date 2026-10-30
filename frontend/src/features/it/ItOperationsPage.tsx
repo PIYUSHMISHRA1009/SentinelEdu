@@ -40,9 +40,12 @@ export const ItOperationsPage: React.FC = () => {
   const { data: accountEvents } = useQuery({
     queryKey: ['admin-account-events'],
     queryFn: async () => {
-      const res = await axiosClient.get<ApiResponse<AccountEvent[]>>(API_ENDPOINTS.ADMIN_ACCOUNT_EVENTS, {
-        params: { limit: 40 },
-      });
+      const res = await axiosClient.get<ApiResponse<AccountEvent[]>>(
+        API_ENDPOINTS.ADMIN_ACCOUNT_EVENTS,
+        {
+          params: { limit: 40 },
+        }
+      );
       return res.data.data;
     },
   });
@@ -50,19 +53,24 @@ export const ItOperationsPage: React.FC = () => {
   const { data: activity } = useQuery({
     queryKey: ['admin-activity'],
     queryFn: async () => {
-      const res = await axiosClient.get<ApiResponse<Array<{ type: string; id: number; ts?: string; summary?: string }>>>(
-        '/admin/activity',
-      );
+      const res =
+        await axiosClient.get<
+          ApiResponse<Array<{ type: string; id: number; ts?: string; summary?: string }>>
+        >('/admin/activity');
       return res.data.data;
     },
   });
 
-  const { data: dbHealth, isLoading: healthLoading, refetch: refetchHealth } = useQuery({
+  const {
+    data: dbHealth,
+    isLoading: healthLoading,
+    refetch: refetchHealth,
+  } = useQuery({
     queryKey: ['health-db'],
     queryFn: async () => {
-      const res = await axiosClient.get<ApiResponse<{ status: string; tableCounts: Record<string, number>; totalRecords: number }>>(
-        API_ENDPOINTS.HEALTH_DB,
-      );
+      const res = await axiosClient.get<
+        ApiResponse<{ status: string; tableCounts: Record<string, number>; totalRecords: number }>
+      >(API_ENDPOINTS.HEALTH_DB);
       return res.data.data;
     },
   });
@@ -101,8 +109,10 @@ export const ItOperationsPage: React.FC = () => {
   const accountRangeEnd = filteredAccounts.length ? accountSliceStart + visibleAccounts.length : 0;
   const tablesTracked = useMemo(() => Object.keys(dbHealth?.tableCounts || {}).length, [dbHealth]);
   const recentResets = useMemo(
-    () => (accountEvents || []).filter((event) => event.event_type.toLowerCase().includes('reset')).length,
-    [accountEvents],
+    () =>
+      (accountEvents || []).filter((event) => event.event_type.toLowerCase().includes('reset'))
+        .length,
+    [accountEvents]
   );
 
   const handleReset = async () => {
@@ -118,7 +128,10 @@ export const ItOperationsPage: React.FC = () => {
         ? { username: trimmedUsername, new_password: trimmedPassword }
         : { username: trimmedUsername };
 
-      const res = await axiosClient.post<ApiResponse<ResetPasswordResult>>(API_ENDPOINTS.ADMIN_RESET_PASSWORD, payload);
+      const res = await axiosClient.post<ApiResponse<ResetPasswordResult>>(
+        API_ENDPOINTS.ADMIN_RESET_PASSWORD,
+        payload
+      );
       if (res.data.success && res.data.data) {
         const details = res.data.data;
         setLastResetResult(details);
@@ -129,7 +142,7 @@ export const ItOperationsPage: React.FC = () => {
         setResetMessage(
           details.password
             ? `Password reset for ${details.username}. Copy the new credential below.`
-            : `Password reset for ${details.username}.`,
+            : `Password reset for ${details.username}.`
         );
       } else {
         setResetMessage(res.data.message || 'Failed to update password');
@@ -148,7 +161,8 @@ export const ItOperationsPage: React.FC = () => {
           <div>
             <h1 className="text-4xl font-bold">IT Console</h1>
             <p className="mt-2 max-w-xl text-sm text-primary-100/90">
-              Manage credentials, monitor data health, and review the latest account activity across InsightFlow EDU.
+              Manage credentials, monitor data health, and review the latest account activity across
+              InsightFlow EDU.
             </p>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -164,7 +178,9 @@ export const ItOperationsPage: React.FC = () => {
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Add Student Account</h2>
+                <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
+                  Add Student Account
+                </h2>
                 <p className="text-sm text-slate-500 dark:text-slate-300">
                   Provision new student access with automatic credential generation.
                 </p>
@@ -181,7 +197,10 @@ export const ItOperationsPage: React.FC = () => {
             </div>
             {showAddStudent ? (
               <div className="mt-6">
-                <AddStudentForm onSuccess={() => setShowAddStudent(false)} onCancel={() => setShowAddStudent(false)} />
+                <AddStudentForm
+                  onSuccess={() => setShowAddStudent(false)}
+                  onCancel={() => setShowAddStudent(false)}
+                />
               </div>
             ) : null}
           </div>
@@ -191,9 +210,12 @@ export const ItOperationsPage: React.FC = () => {
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-slate-900 dark:text-white">User Accounts</h2>
+                <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
+                  User Accounts
+                </h2>
                 <p className="text-sm text-slate-500 dark:text-slate-300">
-                  View the latest generated passwords and affiliation details across students and staff.
+                  View the latest generated passwords and affiliation details across students and
+                  staff.
                 </p>
               </div>
               <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
@@ -225,7 +247,8 @@ export const ItOperationsPage: React.FC = () => {
               <>
                 <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                    Showing {accountRangeStart.toLocaleString()}-{accountRangeEnd.toLocaleString()} of {filteredAccounts.length.toLocaleString()} accounts
+                    Showing {accountRangeStart.toLocaleString()}-{accountRangeEnd.toLocaleString()}{' '}
+                    of {filteredAccounts.length.toLocaleString()} accounts
                   </p>
                   <div className="flex items-center gap-2">
                     <button
@@ -241,7 +264,9 @@ export const ItOperationsPage: React.FC = () => {
                     </span>
                     <button
                       type="button"
-                      onClick={() => setAccountPage((prev) => Math.min(totalAccountPages, prev + 1))}
+                      onClick={() =>
+                        setAccountPage((prev) => Math.min(totalAccountPages, prev + 1))
+                      }
                       disabled={accountPage === totalAccountPages}
                       className="rounded-lg border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-primary-400 hover:text-primary-600 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:border-primary-500 dark:hover:text-primary-300"
                     >
@@ -252,80 +277,91 @@ export const ItOperationsPage: React.FC = () => {
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-slate-200 text-sm">
                     <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    <tr>
-                      <th className="px-4 py-3 text-left">Account</th>
-                      <th className="px-4 py-3 text-left">Username</th>
-                      <th className="px-4 py-3 text-left">Password</th>
-                      <th className="px-4 py-3 text-left">Affiliation</th>
-                      <th className="px-4 py-3 text-left">Last Reset</th>
-                      <th className="px-4 py-3 text-left">Last Login</th>
-                      <th className="px-4 py-3 text-left">Actions</th>
-                    </tr>
-                  </thead>
+                      <tr>
+                        <th className="px-4 py-3 text-left">Account</th>
+                        <th className="px-4 py-3 text-left">Username</th>
+                        <th className="px-4 py-3 text-left">Password</th>
+                        <th className="px-4 py-3 text-left">Affiliation</th>
+                        <th className="px-4 py-3 text-left">Last Reset</th>
+                        <th className="px-4 py-3 text-left">Last Login</th>
+                        <th className="px-4 py-3 text-left">Actions</th>
+                      </tr>
+                    </thead>
                     <tbody className="divide-y divide-slate-200 bg-white dark:divide-slate-800 dark:bg-slate-900">
-                    {visibleAccounts.map((acct) => {
-                      const rowKey = acct.student_id
-                        ? `student-${acct.student_id}`
-                        : acct.faculty_id
-                        ? `staff-${acct.faculty_id}`
-                        : acct.username;
-                      const affiliation = acct.account_type === 'student'
-                        ? acct.roll_number || '—'
-                        : [acct.role, acct.department].filter(Boolean).join(' • ') || '—';
-                      return (
-                        <tr key={rowKey} className="hover:bg-slate-50 dark:hover:bg-slate-800">
-                          <td className="px-4 py-3">
-                            <div className="text-sm font-semibold text-slate-900 dark:text-white">{acct.name || acct.username}</div>
-                            <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{acct.account_type}</div>
-                          </td>
-                          <td className="px-4 py-3">
-                            <code className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-800 dark:bg-slate-800 dark:text-slate-200">
-                              {acct.username}
-                            </code>
-                          </td>
-                          <td className="px-4 py-3">
-                            {acct.last_plaintext_password ? (
+                      {visibleAccounts.map((acct) => {
+                        const rowKey = acct.student_id
+                          ? `student-${acct.student_id}`
+                          : acct.faculty_id
+                            ? `staff-${acct.faculty_id}`
+                            : acct.username;
+                        const affiliation =
+                          acct.account_type === 'student'
+                            ? acct.roll_number || '—'
+                            : [acct.role, acct.department].filter(Boolean).join(' • ') || '—';
+                        return (
+                          <tr key={rowKey} className="hover:bg-slate-50 dark:hover:bg-slate-800">
+                            <td className="px-4 py-3">
+                              <div className="text-sm font-semibold text-slate-900 dark:text-white">
+                                {acct.name || acct.username}
+                              </div>
+                              <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                                {acct.account_type}
+                              </div>
+                            </td>
+                            <td className="px-4 py-3">
                               <code className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-800 dark:bg-slate-800 dark:text-slate-200">
-                                {acct.last_plaintext_password}
+                                {acct.username}
                               </code>
-                            ) : (
-                              <span className="text-xs text-slate-400">Not available</span>
-                            )}
-                          </td>
-                          <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-300">{affiliation}</td>
-                          <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-300">
-                            {acct.last_reset_on
-                              ? new Date(acct.last_reset_on).toLocaleString()
-                              : acct.created_on
-                              ? `Created ${new Date(acct.created_on).toLocaleString()}`
-                              : '—'}
-                          </td>
-                          <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-300">
-                            {acct.last_login ? new Date(acct.last_login).toLocaleString() : '—'}
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
-                              <button
-                                type="button"
-                                onClick={() => navigator.clipboard.writeText(acct.username)}
-                                className="text-xs font-semibold text-primary-600 hover:underline"
-                              >
-                                Copy Username
-                              </button>
+                            </td>
+                            <td className="px-4 py-3">
                               {acct.last_plaintext_password ? (
+                                <code className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-800 dark:bg-slate-800 dark:text-slate-200">
+                                  {acct.last_plaintext_password}
+                                </code>
+                              ) : (
+                                <span className="text-xs text-slate-400">Not available</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-300">
+                              {affiliation}
+                            </td>
+                            <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-300">
+                              {acct.last_reset_on
+                                ? new Date(acct.last_reset_on).toLocaleString()
+                                : acct.created_on
+                                  ? `Created ${new Date(acct.created_on).toLocaleString()}`
+                                  : '—'}
+                            </td>
+                            <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-300">
+                              {acct.last_login ? new Date(acct.last_login).toLocaleString() : '—'}
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-2">
                                 <button
                                   type="button"
-                                  onClick={() => navigator.clipboard.writeText(acct.last_plaintext_password || '')}
+                                  onClick={() => navigator.clipboard.writeText(acct.username)}
                                   className="text-xs font-semibold text-primary-600 hover:underline"
                                 >
-                                  Copy Password
+                                  Copy Username
                                 </button>
-                              ) : null}
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
+                                {acct.last_plaintext_password ? (
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      navigator.clipboard.writeText(
+                                        acct.last_plaintext_password || ''
+                                      )
+                                    }
+                                    className="text-xs font-semibold text-primary-600 hover:underline"
+                                  >
+                                    Copy Password
+                                  </button>
+                                ) : null}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -337,7 +373,9 @@ export const ItOperationsPage: React.FC = () => {
         <div className="space-y-6">
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Reset Password</h2>
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
+                Reset Password
+              </h2>
               <button
                 type="button"
                 onClick={() => {
@@ -363,7 +401,9 @@ export const ItOperationsPage: React.FC = () => {
               <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <div className="text-sm font-semibold text-slate-900 dark:text-white">{lastResetResult.username}</div>
+                    <div className="text-sm font-semibold text-slate-900 dark:text-white">
+                      {lastResetResult.username}
+                    </div>
                     <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
                       {lastResetResult.account_type}
                     </div>
@@ -407,15 +447,17 @@ export const ItOperationsPage: React.FC = () => {
               </button>
             </div>
             <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
-              Passwords are hashed with BCrypt. Leave the password blank to generate a secure value automatically; the plaintext
-              is only shown once above.
+              Passwords are hashed with BCrypt. Leave the password blank to generate a secure value
+              automatically; the plaintext is only shown once above.
             </p>
           </div>
 
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Data Monitor</h2>
+                <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
+                  Data Monitor
+                </h2>
                 <p className="text-sm text-slate-500 dark:text-slate-300">
                   Live table counts from the operational database.
                 </p>
@@ -450,7 +492,9 @@ export const ItOperationsPage: React.FC = () => {
           </div>
 
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Recent Activity</h2>
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
+              Recent Activity
+            </h2>
             {!activity || activity.length === 0 ? (
               <p className="mt-3 text-sm text-slate-500">No recent events.</p>
             ) : (
@@ -508,7 +552,9 @@ export const ItOperationsPage: React.FC = () => {
 
 const StatBadge: React.FC<{ label: string; value: number }> = ({ label, value }) => (
   <div className="rounded-2xl border border-primary-500/40 bg-primary-600/30 px-4 py-3 text-center shadow-inner">
-    <div className="text-[11px] font-semibold uppercase tracking-wide text-primary-100">{label}</div>
+    <div className="text-[11px] font-semibold uppercase tracking-wide text-primary-100">
+      {label}
+    </div>
     <div className="mt-1 text-2xl font-bold text-white">{value}</div>
   </div>
 );
@@ -517,14 +563,17 @@ const BackfillCredentialsCard: React.FC = () => {
   const { addToast } = useToast();
   const queryClient = useQueryClient();
   const [running, setRunning] = useState(false);
-  const [result, setResult] = useState<
-    { created: number; credentials: Array<{ student_id: number; username: string; password: string }> } | null
-  >(null);
+  const [result, setResult] = useState<{
+    created: number;
+    credentials: Array<{ student_id: number; username: string; password: string }>;
+  } | null>(null);
 
   const runBackfill = async () => {
     try {
       setRunning(true);
-      const res = await axiosClient.post<ApiResponse<any>>(API_ENDPOINTS.ADMIN_BACKFILL_STUDENT_AUTH);
+      const res = await axiosClient.post<ApiResponse<any>>(
+        API_ENDPOINTS.ADMIN_BACKFILL_STUDENT_AUTH
+      );
       if (res.data.success) {
         const data = res.data.data as any;
         setResult({ created: data.created || 0, credentials: data.credentials || [] });
@@ -545,7 +594,9 @@ const BackfillCredentialsCard: React.FC = () => {
     <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Backfill Student Credentials</h2>
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
+            Backfill Student Credentials
+          </h2>
           <p className="text-sm text-slate-500 dark:text-slate-300">
             Generate missing auth records for existing students and capture their credentials once.
           </p>
@@ -562,8 +613,9 @@ const BackfillCredentialsCard: React.FC = () => {
       {result && (
         <div className="mt-4 space-y-3 text-sm text-slate-700 dark:text-slate-200">
           <p>
-            Created <strong>{result.created}</strong> new credential{result.created === 1 ? '' : 's'}. Copy the generated values now—they
-            are only displayed once.
+            Created <strong>{result.created}</strong> new credential
+            {result.created === 1 ? '' : 's'}. Copy the generated values now—they are only displayed
+            once.
           </p>
           {result.credentials.length > 0 && (
             <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
@@ -578,8 +630,13 @@ const BackfillCredentialsCard: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-200 bg-white dark:divide-slate-800 dark:bg-slate-900">
                   {result.credentials.map((cred) => (
-                    <tr key={`${cred.student_id}-${cred.username}`} className="hover:bg-slate-50 dark:hover:bg-slate-800">
-                      <td className="px-4 py-2 font-mono text-xs text-slate-600 dark:text-slate-300">{cred.student_id}</td>
+                    <tr
+                      key={`${cred.student_id}-${cred.username}`}
+                      className="hover:bg-slate-50 dark:hover:bg-slate-800"
+                    >
+                      <td className="px-4 py-2 font-mono text-xs text-slate-600 dark:text-slate-300">
+                        {cred.student_id}
+                      </td>
                       <td className="px-4 py-2">
                         <code className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-800 dark:bg-slate-800 dark:text-slate-200">
                           {cred.username}

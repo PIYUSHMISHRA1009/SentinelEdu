@@ -67,11 +67,14 @@ export const ThemeProvider: React.FC<React.PropsWithChildren> = ({ children }) =
     return () => media.removeEventListener('change', handler);
   }, []);
 
-  const value = useMemo<ThemeContextValue>(() => ({
-    theme,
-    toggleTheme: () => setThemeState((prev) => (prev === 'dark' ? 'light' : 'dark')),
-    setTheme: (mode: ThemeMode) => setThemeState(mode),
-  }), [theme]);
+  const value = useMemo<ThemeContextValue>(
+    () => ({
+      theme,
+      toggleTheme: () => setThemeState((prev) => (prev === 'dark' ? 'light' : 'dark')),
+      setTheme: (mode: ThemeMode) => setThemeState(mode),
+    }),
+    [theme]
+  );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 };

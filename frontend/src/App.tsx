@@ -11,7 +11,13 @@ import DataQualityPage from './pages/DataQualityPage';
 import { AppHeader } from './components/academic/AppHeader';
 import { User } from './types';
 
-const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode; allowedRoles?: string[] }) => {
+const ProtectedRoute = ({
+  children,
+  allowedRoles,
+}: {
+  children: React.ReactNode;
+  allowedRoles?: string[];
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -20,8 +26,9 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode;
       setLoading(false);
       return;
     }
-    api.getMe()
-      .then(data => {
+    api
+      .getMe()
+      .then((data) => {
         setUser(data);
         setLoading(false);
       })
@@ -61,10 +68,13 @@ const RoleBasedHomeRedirect = () => {
 
   useEffect(() => {
     if (api.isAuthenticated()) {
-      api.getMe().then(data => {
-        setUser(data);
-        setLoading(false);
-      }).catch(() => setLoading(false));
+      api
+        .getMe()
+        .then((data) => {
+          setUser(data);
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
     } else {
       setLoading(false);
     }
@@ -92,10 +102,13 @@ const Layout = () => {
 
   useEffect(() => {
     if (api.isAuthenticated()) {
-      api.getMe().then(data => setUser(data)).catch(() => {
-        api.clearToken();
-        navigate('/login');
-      });
+      api
+        .getMe()
+        .then((data) => setUser(data))
+        .catch(() => {
+          api.clearToken();
+          navigate('/login');
+        });
     }
   }, [navigate]);
 
@@ -114,17 +127,65 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
-        
-        <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-          <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute>} />
-          <Route path="/faculty" element={<ProtectedRoute allowedRoles={['teacher']}><FacultyDashboard /></ProtectedRoute>} />
-          <Route path="/student" element={<ProtectedRoute allowedRoles={['student']}><StudentDashboard /></ProtectedRoute>} />
-          <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><RiskDashboard /></ProtectedRoute>} />
-          <Route path="/data-quality" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><DataQualityPage /></ProtectedRoute>} />
-          <Route path="/analytics" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><AnalyticsDashboard /></ProtectedRoute>} />
+
+        <Route
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/faculty"
+            element={
+              <ProtectedRoute allowedRoles={['teacher']}>
+                <FacultyDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/student"
+            element={
+              <ProtectedRoute allowedRoles={['student']}>
+                <StudentDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['admin', 'teacher']}>
+                <RiskDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/data-quality"
+            element={
+              <ProtectedRoute allowedRoles={['admin', 'teacher']}>
+                <DataQualityPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/analytics"
+            element={
+              <ProtectedRoute allowedRoles={['admin', 'teacher']}>
+                <AnalyticsDashboard />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/" element={<RoleBasedHomeRedirect />} />
         </Route>
-        
+
         <Route path="*" element={<RoleBasedHomeRedirect />} />
       </Routes>
     </BrowserRouter>
