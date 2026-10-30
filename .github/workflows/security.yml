@@ -129,22 +129,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Semgrep
-        uses: returntocorp/semgrep-action@v1
-        with:
-          config: >
-            p/security-audit
-            p/secrets
-            p/python
-            p/typescript
-            p/docker
-            p/kubernetes
-          generateSarif: true
+      - name: Install Semgrep
+        run: python -m pip install semgrep
 
-      - name: Upload SARIF
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: semgrep.sarif
+      - name: Run Semgrep
+        run: semgrep scan --config auto --metrics=off
 
   # ============================================================
   # SBOM GENERATION
