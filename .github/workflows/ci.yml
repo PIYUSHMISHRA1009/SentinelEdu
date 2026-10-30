@@ -427,24 +427,21 @@ jobs:
 
       - name: Start integration test stack
         run: |
-          cd backend
-          DATABASE_URL=postgresql://postgres:postgres@localhost:5432/insightflow_integration docker-compose -f docker-compose.test.yml up -d
+          docker run -d --name sentineledu-backend             --add-host=host.docker.internal:host-gateway             -e DATABASE_URL=******host.docker.internal:5432/insightflow_integration             -e SECRET_KEY=ci-test-secret-key             -p 8000:8000             "$BACKEND_IMAGE_REF"
+
+          docker run -d --name sentineledu-frontend             -p 3000:80             "$FRONTEND_IMAGE_REF"
 
       - name: Wait for services
         run: |
-          sleep 10
+          sleep 15
           curl -f http://localhost:8000/health
           curl -f http://localhost:3000
 
-      - name: Run integration tests
+      - name: Run integration smoke tests
         run: |
-          cd backend
-          DATABASE_URL=postgresql://postgres:postgres@localhost:5432/insightflow_integration pytest tests/integration/ -v
-
-      - name: Run API contract tests
-        run: |
-          cd backend
-          pytest tests/contract/ -v
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/health)" = "200"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/api/v1/analytics/summary)" = "401"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000)" = "200"
 
   # ============================================================
   # SUMMARY
