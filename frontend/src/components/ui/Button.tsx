@@ -117,9 +117,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           </>
         ) : (
           <>
-            {leftIcon && <span className="flex-shrink-0" aria-hidden="true">{leftIcon}</span>}
+            {leftIcon && (
+              <span className="flex-shrink-0" aria-hidden="true">
+                {leftIcon}
+              </span>
+            )}
             {children}
-            {rightIcon && <span className="flex-shrink-0" aria-hidden="true">{rightIcon}</span>}
+            {rightIcon && (
+              <span className="flex-shrink-0" aria-hidden="true">
+                {rightIcon}
+              </span>
+            )}
           </>
         )}
       </button>

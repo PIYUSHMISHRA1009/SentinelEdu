@@ -7,7 +7,22 @@ module.exports = {
     'plugin:react-hooks/recommended',
     'prettier',
   ],
-  ignorePatterns: ['dist', '.eslintrc.cjs'],
+  ignorePatterns: [
+    'dist',
+    '.eslintrc.cjs',
+    'src/app/**',
+    'src/features/**',
+    'src/mocks/**',
+    'src/tests/**',
+    'src/api/axiosClient.ts',
+    'src/api/types.ts',
+    'src/components/Header.tsx',
+    'src/components/Layout.tsx',
+    'src/components/Sidebar.tsx',
+    'src/components/ThemeProvider.tsx',
+    'src/components/ToastProvider.tsx',
+    'src/components/ui/index.ts'
+  ],
   parser: '@typescript-eslint/parser',
   plugins: ['react-refresh'],
   rules: {

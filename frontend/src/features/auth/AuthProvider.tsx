@@ -68,7 +68,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = (newToken: string, newUser: User, newRole: UserRole) => {
     // Clear any prior cache tied to a different identity
-  clearQueryCache();
+    clearQueryCache();
     setToken(newToken);
     setUser(newUser);
     setRole(newRole);
@@ -79,7 +79,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = () => {
-  clearQueryCache();
+    clearQueryCache();
     setToken(null);
     setUser(null);
     setRole(null);

@@ -1,6 +1,22 @@
 import { useState, useEffect } from 'react';
 import { clsx } from 'clsx';
-import { ChevronLeft, ChevronRight, LayoutDashboard, Users, BookOpen, AlertTriangle, BarChart2, Settings, Shield, GraduationCap, UserCog, Bell, Sun, Moon, LogOut } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  LayoutDashboard,
+  Users,
+  BookOpen,
+  AlertTriangle,
+  BarChart2,
+  Settings,
+  Shield,
+  GraduationCap,
+  UserCog,
+  Bell,
+  Sun,
+  Moon,
+  LogOut,
+} from 'lucide-react';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { Button } from './Button';
 import { Badge } from './Badge';
@@ -11,18 +27,54 @@ interface NavItem {
   path: string;
   roles?: string[];
   badge?: string;
-  badgeVariant?: 'critical' | 'high' | 'medium' | 'low' | 'success' | 'warning' | 'info' | 'neutral';
+  badgeVariant?:
+    'critical' | 'high' | 'medium' | 'low' | 'success' | 'warning' | 'info' | 'neutral';
   children?: NavItem[];
 }
 
 const navItems: NavItem[] = [
-  { label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" />, path: '/dashboard', roles: ['admin', 'teacher', 'student'] },
-  { label: 'Students', icon: <Users className="h-5 w-5" />, path: '/students', roles: ['admin', 'teacher'] },
-  { label: 'Classes', icon: <BookOpen className="h-5 w-5" />, path: '/classes', roles: ['admin', 'teacher'] },
-  { label: 'Risk Analytics', icon: <AlertTriangle className="h-5 w-5" />, path: '/risk', roles: ['admin', 'teacher'] },
-  { label: 'Analytics', icon: <BarChart2 className="h-5 w-5" />, path: '/analytics', roles: ['admin', 'teacher'] },
-  { label: 'Interventions', icon: <Shield className="h-5 w-5" />, path: '/interventions', roles: ['admin', 'teacher'] },
-  { label: 'Settings', icon: <Settings className="h-5 w-5" />, path: '/settings', roles: ['admin'] },
+  {
+    label: 'Dashboard',
+    icon: <LayoutDashboard className="h-5 w-5" />,
+    path: '/dashboard',
+    roles: ['admin', 'teacher', 'student'],
+  },
+  {
+    label: 'Students',
+    icon: <Users className="h-5 w-5" />,
+    path: '/students',
+    roles: ['admin', 'teacher'],
+  },
+  {
+    label: 'Classes',
+    icon: <BookOpen className="h-5 w-5" />,
+    path: '/classes',
+    roles: ['admin', 'teacher'],
+  },
+  {
+    label: 'Risk Analytics',
+    icon: <AlertTriangle className="h-5 w-5" />,
+    path: '/risk',
+    roles: ['admin', 'teacher'],
+  },
+  {
+    label: 'Analytics',
+    icon: <BarChart2 className="h-5 w-5" />,
+    path: '/analytics',
+    roles: ['admin', 'teacher'],
+  },
+  {
+    label: 'Interventions',
+    icon: <Shield className="h-5 w-5" />,
+    path: '/interventions',
+    roles: ['admin', 'teacher'],
+  },
+  {
+    label: 'Settings',
+    icon: <Settings className="h-5 w-5" />,
+    path: '/settings',
+    roles: ['admin'],
+  },
 ];
 
 export interface SidebarProps {
@@ -38,7 +90,7 @@ export const Sidebar = ({ className = '' }: SidebarProps) => {
   useEffect(() => {
     const saved = localStorage.getItem('sidebar-collapsed');
     if (saved !== null) setCollapsed(saved === 'true');
-    
+
     const darkSaved = localStorage.getItem('dark-mode');
     if (darkSaved !== null) setDarkMode(darkSaved === 'true');
     else setDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -57,8 +109,8 @@ export const Sidebar = ({ className = '' }: SidebarProps) => {
     }
   }, [darkMode]);
 
-  const filteredNavItems = navItems.filter(item => 
-    !item.roles || (user && item.roles.includes(user.role))
+  const filteredNavItems = navItems.filter(
+    (item) => !item.roles || (user && item.roles.includes(user.role))
   );
 
   const handleLogout = () => {
@@ -92,10 +144,12 @@ export const Sidebar = ({ className = '' }: SidebarProps) => {
         aria-label="Main navigation"
       >
         {/* Logo Section */}
-        <div className={clsx(
-          'flex items-center justify-between h-16 px-4 border-b border-slate-700/50',
-          collapsed && 'justify-center px-0'
-        )}>
+        <div
+          className={clsx(
+            'flex items-center justify-between h-16 px-4 border-b border-slate-700/50',
+            collapsed && 'justify-center px-0'
+          )}
+        >
           {!collapsed && (
             <div className="flex items-center gap-3 min-w-0">
               <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-sky-600/20">
@@ -162,10 +216,12 @@ export const Sidebar = ({ className = '' }: SidebarProps) => {
         </nav>
 
         {/* User Section */}
-        <div className={clsx(
-          'p-3 border-t border-slate-700/50',
-          collapsed && 'items-center justify-center'
-        )}>
+        <div
+          className={clsx(
+            'p-3 border-t border-slate-700/50',
+            collapsed && 'items-center justify-center'
+          )}
+        >
           {!collapsed && user && (
             <div className="flex items-center gap-3 mb-3 p-3 rounded-xl bg-slate-800/50">
               <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-sky-600/20">
@@ -189,11 +245,7 @@ export const Sidebar = ({ className = '' }: SidebarProps) => {
               </Button>
             )}
             {!collapsed && (
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Notifications"
-              >
+              <Button variant="ghost" size="icon" aria-label="Notifications">
                 <Bell className="h-5 w-5" />
               </Button>
             )}

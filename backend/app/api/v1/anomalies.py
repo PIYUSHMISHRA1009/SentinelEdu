@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request
-from sqlalchemy.orm import Session
-from typing import List, Optional
+from typing import List
 
-from app.api.deps import get_db, get_current_active_user, require_teacher
+from fastapi import APIRouter, Depends, Request
+from sqlalchemy.orm import Session
+
+from app.api.deps import get_db, require_teacher
 from app.core.audit_logger import audit_logger
-from app.db.models import User, UserRole, AuditLog
+from app.db.models import User
 from app.services.anomaly_detector import anomaly_detector
 
 router = APIRouter()
@@ -19,16 +20,16 @@ def get_anomalies(
 ):
     """Get detected anomalies from audit logs."""
     anomalies = anomaly_detector.detect_anomalies(db, hours_back=hours_back)
-    
+
     audit_logger.data_access(
         user_id=current_user.id,
         user_email=current_user.email,
         resource="security/anomalies",
         action="read",
         request=request,
-        details={"hours_back": hours_back, "anomalies_found": len(anomalies)}
+        details={"hours_back": hours_back, "anomalies_found": len(anomalies)},
     )
-    
+
     return anomalies
 
 
@@ -41,16 +42,16 @@ def get_impossible_travel(
 ):
     """Detect impossible travel patterns."""
     alerts = anomaly_detector.detect_impossible_travel(db, hours_back=hours_back)
-    
+
     audit_logger.data_access(
         user_id=current_user.id,
         user_email=current_user.email,
         resource="security/impossible-travel",
         action="read",
         request=request,
-        details={"hours_back": hours_back, "alerts_found": len(alerts)}
+        details={"hours_back": hours_back, "alerts_found": len(alerts)},
     )
-    
+
     return alerts
 
 
@@ -63,16 +64,16 @@ def get_privilege_escalation(
 ):
     """Detect privilege escalation attempts."""
     alerts = anomaly_detector.detect_privilege_escalation(db, hours_back=hours_back)
-    
+
     audit_logger.data_access(
         user_id=current_user.id,
         user_email=current_user.email,
         resource="security/privilege-escalation",
         action="read",
         request=request,
-        details={"hours_back": hours_back, "alerts_found": len(alerts)}
+        details={"hours_back": hours_back, "alerts_found": len(alerts)},
     )
-    
+
     return alerts
 
 
@@ -85,16 +86,16 @@ def get_brute_force(
 ):
     """Detect brute force login attempts."""
     alerts = anomaly_detector.detect_brute_force(db, hours_back=hours_back)
-    
+
     audit_logger.data_access(
         user_id=current_user.id,
         user_email=current_user.email,
         resource="security/brute-force",
         action="read",
         request=request,
-        details={"hours_back": hours_back, "alerts_found": len(alerts)}
+        details={"hours_back": hours_back, "alerts_found": len(alerts)},
     )
-    
+
     return alerts
 
 
@@ -107,14 +108,17 @@ def run_full_detection(
 ):
     """Run all detection algorithms."""
     results = anomaly_detector.run_full_detection(db, hours_back=hours_back)
-    
+
     audit_logger.data_access(
         user_id=current_user.id,
         user_email=current_user.email,
         resource="security/full-detection",
         action="read",
         request=request,
-        details={"hours_back": hours_back, "total_alerts": results.get("total_alerts", 0)}
+        details={
+            "hours_back": hours_back,
+            "total_alerts": results.get("total_alerts", 0),
+        },
     )
-    
+
     return results

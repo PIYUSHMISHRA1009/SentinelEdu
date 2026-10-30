@@ -24,7 +24,7 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
 
   useEffect(() => {
     springValue.set(value);
-    
+
     const unsubscribe = springValue.on('change', (latest) => {
       setDisplayValue(latest);
     });
@@ -32,13 +32,12 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
     return () => unsubscribe();
   }, [value, springValue]);
 
-  const formatted = decimals > 0 
-    ? displayValue.toFixed(decimals)
-    : Math.floor(displayValue);
+  const formatted = decimals > 0 ? displayValue.toFixed(decimals) : Math.floor(displayValue);
 
   return (
     <span className={className}>
-      {formatted}{suffix}
+      {formatted}
+      {suffix}
     </span>
   );
 };

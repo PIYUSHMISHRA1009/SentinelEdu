@@ -3,7 +3,16 @@
  */
 
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 import type { AttendanceTrend } from '@/api/types';
 
 interface AttendanceChartProps {
@@ -23,11 +32,7 @@ export const AttendanceChart: React.FC<AttendanceChartProps> = ({ data }) => {
         <YAxis domain={[0, 100]} />
         <Tooltip />
         <Legend />
-        <Bar
-          dataKey="avgAttendance"
-          fill="#10b981"
-          name="Average Attendance %"
-        />
+        <Bar dataKey="avgAttendance" fill="#10b981" name="Average Attendance %" />
       </BarChart>
     </ResponsiveContainer>
   );

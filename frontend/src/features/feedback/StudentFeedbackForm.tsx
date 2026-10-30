@@ -18,7 +18,10 @@ interface StudentFeedbackFormProps {
 
 // (Removed unused Course interface)
 
-export const StudentFeedbackForm: React.FC<StudentFeedbackFormProps> = ({ onSuccess, onCancel }) => {
+export const StudentFeedbackForm: React.FC<StudentFeedbackFormProps> = ({
+  onSuccess,
+  onCancel,
+}) => {
   const queryClient = useQueryClient();
   const { user, role } = useAuth();
   const { addToast } = useToast();
@@ -26,7 +29,9 @@ export const StudentFeedbackForm: React.FC<StudentFeedbackFormProps> = ({ onSucc
     studentId: '',
     courseId: '',
     feedbackText: '',
-    submittedBy: (user as any)?.faculty_id || (role === 'faculty' || role === 'academic_head' || role === 'it' ? user?.id : undefined)
+    submittedBy:
+      (user as any)?.faculty_id ||
+      (role === 'faculty' || role === 'academic_head' || role === 'it' ? user?.id : undefined),
   });
 
   // Ensure studentId is set from /profile to avoid mismatch
@@ -41,7 +46,11 @@ export const StudentFeedbackForm: React.FC<StudentFeedbackFormProps> = ({ onSucc
 
   useEffect(() => {
     if (role === 'student' && profileData?.student_id) {
-  setFormData(prev => ({ ...prev, studentId: String(profileData.student_id), submittedBy: undefined }));
+      setFormData((prev) => ({
+        ...prev,
+        studentId: String(profileData.student_id),
+        submittedBy: undefined,
+      }));
     }
   }, [role, profileData]);
 
@@ -62,14 +71,21 @@ export const StudentFeedbackForm: React.FC<StudentFeedbackFormProps> = ({ onSucc
     queryKey: ['student-detail', selectedStudentId],
     queryFn: async () => {
       if (!selectedStudentId) return [];
-      const res = await axiosClient.get<ApiResponse<any>>(API_ENDPOINTS.STUDENT_DETAIL(selectedStudentId));
+      const res = await axiosClient.get<ApiResponse<any>>(
+        API_ENDPOINTS.STUDENT_DETAIL(selectedStudentId)
+      );
       return res.data.data?.enrollments || [];
     },
     enabled: !!selectedStudentId,
   });
 
   const submitMutation = useMutation({
-    mutationFn: async (data: { studentId: number; courseId?: number; feedbackText: string; submittedBy?: number }) => {
+    mutationFn: async (data: {
+      studentId: number;
+      courseId?: number;
+      feedbackText: string;
+      submittedBy?: number;
+    }) => {
       const payload: any = {
         studentId: data.studentId,
         courseId: data.courseId,
@@ -78,15 +94,14 @@ export const StudentFeedbackForm: React.FC<StudentFeedbackFormProps> = ({ onSucc
       if (typeof data.submittedBy === 'number' && data.submittedBy > 0) {
         payload.submittedBy = data.submittedBy;
       }
-      const response = await axiosClient.post<ApiResponse<{ feedback_id: number; sentiment: string }>>(
-        API_ENDPOINTS.FEEDBACK,
-        payload
-      );
+      const response = await axiosClient.post<
+        ApiResponse<{ feedback_id: number; sentiment: string }>
+      >(API_ENDPOINTS.FEEDBACK, payload);
       return response.data;
     },
     onSuccess: (resp) => {
-  queryClient.invalidateQueries({ queryKey: ['feedbacks'] });
-  queryClient.invalidateQueries({ queryKey: ['feedbacks','me'] });
+      queryClient.invalidateQueries({ queryKey: ['feedbacks'] });
+      queryClient.invalidateQueries({ queryKey: ['feedbacks', 'me'] });
       if (formData.studentId) {
         const sid = parseInt(formData.studentId);
         queryClient.invalidateQueries({ queryKey: ['student', String(sid)] });
@@ -96,7 +111,10 @@ export const StudentFeedbackForm: React.FC<StudentFeedbackFormProps> = ({ onSucc
         studentId: role === 'student' ? String(profileData?.student_id || '') : '',
         courseId: '',
         feedbackText: '',
-        submittedBy: role === 'faculty' || role === 'academic_head' || role === 'it' ? ((user as any)?.faculty_id || user?.id) : undefined
+        submittedBy:
+          role === 'faculty' || role === 'academic_head' || role === 'it'
+            ? (user as any)?.faculty_id || user?.id
+            : undefined,
       });
       if (resp?.data?.sentiment) {
         addToast(`Feedback submitted. Detected sentiment: ${resp.data.sentiment}`, 'success');
@@ -104,7 +122,7 @@ export const StudentFeedbackForm: React.FC<StudentFeedbackFormProps> = ({ onSucc
         addToast('Feedback submitted successfully.', 'success');
       }
       onSuccess?.();
-    }
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -113,27 +131,34 @@ export const StudentFeedbackForm: React.FC<StudentFeedbackFormProps> = ({ onSucc
       studentId: parseInt(formData.studentId),
       courseId: formData.courseId ? parseInt(formData.courseId) : undefined,
       feedbackText: formData.feedbackText,
-      submittedBy: formData.submittedBy
+      submittedBy: formData.submittedBy,
     });
   };
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-slate-700">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100 mb-6">Submit Student Feedback</h2>
-      
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100 mb-6">
+        Submit Student Feedback
+      </h2>
+
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Student Selection */}
         {role === 'student' ? (
           <input type="hidden" value={formData.studentId || String(user?.id || '')} />
         ) : (
           <div>
-            <label htmlFor="studentId" className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-2">
+            <label
+              htmlFor="studentId"
+              className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-2"
+            >
               Select Student *
             </label>
             <select
               id="studentId"
               value={formData.studentId}
-              onChange={(e) => setFormData(prev => ({ ...prev, studentId: e.target.value, courseId: '' }))}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, studentId: e.target.value, courseId: '' }))
+              }
               required
               className="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-mint-500 focus:border-mint-500 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-400"
             >
@@ -149,38 +174,49 @@ export const StudentFeedbackForm: React.FC<StudentFeedbackFormProps> = ({ onSucc
 
         {/* Course Selection (required for students; optional for staff for now) */}
         <div>
-          <label htmlFor="courseId" className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-2">
+          <label
+            htmlFor="courseId"
+            className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-2"
+          >
             {role === 'student' ? 'Select Course *' : 'Select Course (optional)'}
           </label>
           <select
             id="courseId"
             value={formData.courseId}
-            onChange={(e) => setFormData(prev => ({ ...prev, courseId: e.target.value }))}
+            onChange={(e) => setFormData((prev) => ({ ...prev, courseId: e.target.value }))}
             required={role === 'student'}
             disabled={!selectedStudentId}
             className="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-mint-500 focus:border-mint-500 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-400 disabled:bg-gray-100 disabled:text-gray-500 dark:disabled:bg-slate-700 dark:disabled:text-slate-400"
           >
-            <option value="">{selectedStudentId ? 'Choose a course...' : 'Select a student first'}</option>
+            <option value="">
+              {selectedStudentId ? 'Choose a course...' : 'Select a student first'}
+            </option>
             {enrollments?.map((enr: any) => (
               <option key={enr.enrollment_id} value={enr.course_id}>
-                {enr.course?.course_code || 'COURSE'} - {enr.course?.course_name || `Course ${enr.course_id}`}
+                {enr.course?.course_code || 'COURSE'} -{' '}
+                {enr.course?.course_name || `Course ${enr.course_id}`}
               </option>
             ))}
           </select>
           {role === 'student' && (
-            <p className="mt-1 text-xs text-gray-500 dark:text-slate-400">You can only submit feedback for your enrolled courses.</p>
+            <p className="mt-1 text-xs text-gray-500 dark:text-slate-400">
+              You can only submit feedback for your enrolled courses.
+            </p>
           )}
         </div>
 
         {/* Feedback Text */}
         <div>
-          <label htmlFor="feedbackText" className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-2">
+          <label
+            htmlFor="feedbackText"
+            className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-2"
+          >
             Feedback *
           </label>
           <textarea
             id="feedbackText"
             value={formData.feedbackText}
-            onChange={(e) => setFormData(prev => ({ ...prev, feedbackText: e.target.value }))}
+            onChange={(e) => setFormData((prev) => ({ ...prev, feedbackText: e.target.value }))}
             required
             rows={6}
             className="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-mint-500 focus:border-mint-500 resize-none bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-400"
@@ -191,14 +227,18 @@ export const StudentFeedbackForm: React.FC<StudentFeedbackFormProps> = ({ onSucc
         {/* Info Box */}
         <div className="p-4 bg-blue-50 dark:bg-slate-700 rounded-lg border border-blue-200 dark:border-slate-600">
           <p className="text-sm text-blue-800 dark:text-slate-100">
-            💡 <strong>Note:</strong> The feedback is automatically analyzed to estimate sentiment (Positive/Neutral/Negative). This uses simple rules or a database function if configured; it is not a full ML model.
+            💡 <strong>Note:</strong> The feedback is automatically analyzed to estimate sentiment
+            (Positive/Neutral/Negative). This uses simple rules or a database function if
+            configured; it is not a full ML model.
           </p>
         </div>
 
         {/* Error Message */}
         {submitMutation.isError && (
           <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg">
-            {submitMutation.error instanceof Error ? submitMutation.error.message : 'Failed to submit feedback'}
+            {submitMutation.error instanceof Error
+              ? submitMutation.error.message
+              : 'Failed to submit feedback'}
           </div>
         )}
 

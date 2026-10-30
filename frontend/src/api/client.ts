@@ -66,7 +66,13 @@ class ApiClient {
     return response.data;
   }
 
-  async register(data: { email: string; password: string; full_name: string; role: string; department?: string }) {
+  async register(data: {
+    email: string;
+    password: string;
+    full_name: string;
+    role: string;
+    department?: string;
+  }) {
     const response = await this.client.post('/auth/register', data);
     return response.data;
   }
@@ -87,7 +93,14 @@ class ApiClient {
     return response.data;
   }
 
-  async createClass(data: { code: string; name: string; department: string; semester: number; credits: number; teacher_id: number }) {
+  async createClass(data: {
+    code: string;
+    name: string;
+    department: string;
+    semester: number;
+    credits: number;
+    teacher_id: number;
+  }) {
     const response = await this.client.post('/classes', data);
     return response.data;
   }
@@ -109,23 +122,39 @@ class ApiClient {
   }
 
   async getStudentGradeSummary(studentId: number, classId?: number) {
-    const response = await this.client.get(`/grades/student/${studentId}/summary`, { params: { class_id: classId } });
+    const response = await this.client.get(`/grades/student/${studentId}/summary`, {
+      params: { class_id: classId },
+    });
     return response.data;
   }
 
-  async createGrade(data: { student_id: number; class_id: number; assignment_name: string; score: number; max_score?: number; weight?: number }) {
+  async createGrade(data: {
+    student_id: number;
+    class_id: number;
+    assignment_name: string;
+    score: number;
+    max_score?: number;
+    weight?: number;
+  }) {
     const response = await this.client.post('/grades', data);
     return response.data;
   }
 
   // Attendance endpoints
-  async getAttendance(params?: { student_id?: number; class_id?: number; start_date?: string; end_date?: string }) {
+  async getAttendance(params?: {
+    student_id?: number;
+    class_id?: number;
+    start_date?: string;
+    end_date?: string;
+  }) {
     const response = await this.client.get('/attendance', { params });
     return response.data;
   }
 
   async getAttendanceSummary(studentId: number, classId: number) {
-    const response = await this.client.get(`/attendance/student/${studentId}/class/${classId}/summary`);
+    const response = await this.client.get(
+      `/attendance/student/${studentId}/class/${classId}/summary`
+    );
     return response.data;
   }
 
@@ -134,29 +163,44 @@ class ApiClient {
     return response.data;
   }
 
-  async recordAttendance(data: { student_id: number; class_id: number; date: string; status: string }) {
+  async recordAttendance(data: {
+    student_id: number;
+    class_id: number;
+    date: string;
+    status: string;
+  }) {
     const response = await this.client.post('/attendance', data);
     return response.data;
   }
 
-  async bulkAttendance(data: { class_id: number; date: string; records: Array<{ student_id: number; status: string }> }) {
+  async bulkAttendance(data: {
+    class_id: number;
+    date: string;
+    records: Array<{ student_id: number; status: string }>;
+  }) {
     const response = await this.client.post('/attendance/bulk', data);
     return response.data;
   }
 
   // Risk endpoints
   async assessAllStudents(classId?: number) {
-    const response = await this.client.post('/risk/assess', null, { params: { class_id: classId } });
+    const response = await this.client.post('/risk/assess', null, {
+      params: { class_id: classId },
+    });
     return response.data;
   }
 
   async getStudentRisk(studentId: number, classId?: number) {
-    const response = await this.client.get(`/risk/student/${studentId}`, { params: { class_id: classId } });
+    const response = await this.client.get(`/risk/student/${studentId}`, {
+      params: { class_id: classId },
+    });
     return response.data;
   }
 
   async getStudentRiskHistory(studentId: number, classId?: number) {
-    const response = await this.client.get(`/risk/student/${studentId}/history`, { params: { class_id: classId } });
+    const response = await this.client.get(`/risk/student/${studentId}/history`, {
+      params: { class_id: classId },
+    });
     return response.data;
   }
 
@@ -166,7 +210,58 @@ class ApiClient {
   }
 
   async getStudentTrends(studentId: number, classId?: number) {
-    const response = await this.client.get(`/risk/student/${studentId}/trends`, { params: { class_id: classId } });
+    const response = await this.client.get(`/risk/student/${studentId}/trends`, {
+      params: { class_id: classId },
+    });
+    return response.data;
+  }
+
+  // Analytics endpoints
+  async getAnalyticsSummary() {
+    const response = await this.client.get('/analytics/summary');
+    return response.data;
+  }
+
+  async getDepartmentPerformance() {
+    const response = await this.client.get('/analytics/department-performance');
+    return response.data;
+  }
+
+  async getClassPerformance() {
+    const response = await this.client.get('/analytics/class-performance');
+    return response.data;
+  }
+
+  async getGpaDistribution() {
+    const response = await this.client.get('/analytics/gpa-distribution');
+    return response.data;
+  }
+
+  async getAttendanceVsGpa() {
+    const response = await this.client.get('/analytics/attendance-vs-gpa');
+    return response.data;
+  }
+
+  async getDecliningStudents(limit?: number) {
+    const response = await this.client.get('/analytics/declining-students', { params: { limit } });
+    return response.data;
+  }
+
+  async getInterventionPriority(limit?: number) {
+    const response = await this.client.get('/analytics/intervention-priority', {
+      params: { limit },
+    });
+    return response.data;
+  }
+
+  async getRiskDistribution() {
+    const response = await this.client.get('/analytics/risk-distribution');
+    return response.data;
+  }
+
+  // Data quality endpoint
+  async getDataQualityReport() {
+    const response = await this.client.get('/data-quality/report');
     return response.data;
   }
 }

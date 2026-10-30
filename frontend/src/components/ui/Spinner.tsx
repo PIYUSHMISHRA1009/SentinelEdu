@@ -20,29 +20,21 @@ const variants = {
 };
 
 export const Spinner = forwardRef<HTMLDivElement, SpinnerProps>(
-  (
-    {
-      size = 'md',
-      variant = 'default',
-      className = '',
-      ...props
-    },
-    ref
-  ) => {
+  ({ size = 'md', variant = 'default', className = '', ...props }, ref) => {
     return (
       <div
         ref={ref}
-        className={clsx(
-          'inline-block animate-spin',
-          sizes[size],
-          variants[variant],
-          className
-        )}
+        className={clsx('inline-block animate-spin', sizes[size], variants[variant], className)}
         role="status"
         aria-label="Loading"
         {...props}
       >
-        <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <svg
+          className="h-full w-full"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
           <circle
             className="opacity-25"
             cx="12"
@@ -71,15 +63,7 @@ export interface LoadingOverlayProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const LoadingOverlay = forwardRef<HTMLDivElement, LoadingOverlayProps>(
-  (
-    {
-      message = 'Loading...',
-      size = 'md',
-      className = '',
-      ...props
-    },
-    ref
-  ) => {
+  ({ message = 'Loading...', size = 'md', className = '', ...props }, ref) => {
     return (
       <div
         ref={ref}

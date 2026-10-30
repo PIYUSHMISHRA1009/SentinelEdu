@@ -47,6 +47,12 @@ jobs:
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+      - name: Compute lowercase image repository
+        id: image-repository
+        run: |
+          IMAGE_REPOSITORY="$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')"
+          echo "repository=ghcr.io/${IMAGE_REPOSITORY}" >> "$GITHUB_OUTPUT"
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -64,8 +70,8 @@ jobs:
           file: ./backend/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/backend:${{ steps.version.outputs.version }}
-            ghcr.io/${{ github.repository }}/backend:latest
+            ${{ steps.image-repository.outputs.repository }}/backend:${{ steps.version.outputs.version }}
+            ${{ steps.image-repository.outputs.repository }}/backend:latest
           labels: |
             org.opencontainers.image.version=${{ steps.version.outputs.version }}
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
@@ -77,8 +83,8 @@ jobs:
           file: ./frontend/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/frontend:${{ steps.version.outputs.version }}
-            ghcr.io/${{ github.repository }}/frontend:latest
+            ${{ steps.image-repository.outputs.repository }}/frontend:${{ steps.version.outputs.version }}
+            ${{ steps.image-repository.outputs.repository }}/frontend:latest
           labels: |
             org.opencontainers.image.version=${{ steps.version.outputs.version }}
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
@@ -90,11 +96,11 @@ jobs:
 
       - name: Sign backend image
         run: |
-          cosign sign --yes ghcr.io/${{ github.repository }}/backend:${{ steps.version.outputs.version }}
+          cosign sign --yes ${{ steps.image-repository.outputs.repository }}/backend:${{ steps.version.outputs.version }}
 
       - name: Sign frontend image
         run: |
-          cosign sign --yes ghcr.io/${{ github.repository }}/frontend:${{ steps.version.outputs.version }}
+          cosign sign --yes ${{ steps.image-repository.outputs.repository }}/frontend:${{ steps.version.outputs.version }}
 
       - name: Generate changelog
         id: changelog
@@ -116,7 +122,7 @@ jobs:
     if: ${{ !github.event.inputs.dry_run }}
     steps:
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.build.outputs.version }}
           name: Release ${{ needs.build.outputs.version }}
@@ -175,14 +181,18 @@ jobs:
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
-        if: ${{ secrets.AWS_ROLE_ARN != '' }}
+        if: ${{ env.AWS_ROLE_ARN != '' }}
+        env:
+          AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Configure GCP credentials
         uses: google-github-actions/auth@v2
-        if: ${{ secrets.GCP_SA_KEY != '' }}
+        if: ${{ env.GCP_SA_KEY != '' }}
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 

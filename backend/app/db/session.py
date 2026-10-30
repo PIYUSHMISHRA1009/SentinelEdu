@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import NullPool
 
 from app.core.config import settings
@@ -10,7 +10,11 @@ def get_engine():
         engine = create_engine(
             settings.DATABASE_URL,
             poolclass=NullPool,
-            connect_args={"check_same_thread": False} if "sqlite" in settings.DATABASE_URL else {},
+            connect_args=(
+                {"check_same_thread": False}
+                if "sqlite" in settings.DATABASE_URL
+                else {}
+            ),
         )
     else:
         engine = create_engine(
@@ -36,4 +40,5 @@ def get_db() -> Session:
 
 def init_db():
     from app.db.models import Base
+
     Base.metadata.create_all(bind=engine)

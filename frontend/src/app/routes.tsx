@@ -36,7 +36,9 @@ const UnauthorizedPage: React.FC = () => (
   <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-slate-950">
     <div className="card max-w-md text-center">
       <h1 className="mb-2 text-2xl font-bold text-danger-600">Access Denied</h1>
-      <p className="text-gray-600 dark:text-slate-300">You don't have permission to access this page.</p>
+      <p className="text-gray-600 dark:text-slate-300">
+        You don't have permission to access this page.
+      </p>
     </div>
   </div>
 );
@@ -59,9 +61,30 @@ export const AppRoutes: React.FC = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
-  <Route path="/privacy" element={<AppLayout><PrivacyPage /></AppLayout>} />
-  <Route path="/terms" element={<AppLayout><TermsPage /></AppLayout>} />
-  <Route path="/contact" element={<AppLayout><ContactPage /></AppLayout>} />
+      <Route
+        path="/privacy"
+        element={
+          <AppLayout>
+            <PrivacyPage />
+          </AppLayout>
+        }
+      />
+      <Route
+        path="/terms"
+        element={
+          <AppLayout>
+            <TermsPage />
+          </AppLayout>
+        }
+      />
+      <Route
+        path="/contact"
+        element={
+          <AppLayout>
+            <ContactPage />
+          </AppLayout>
+        }
+      />
       <Route
         path="/change-password"
         element={
@@ -99,7 +122,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/students"
         element={
-          <ProtectedRoute allowedRoles={['academic_head','faculty','it']}>
+          <ProtectedRoute allowedRoles={['academic_head', 'faculty', 'it']}>
             <AppLayout>
               <StudentsListPage />
             </AppLayout>
@@ -110,7 +133,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/students/:id"
         element={
-          <ProtectedRoute allowedRoles={['academic_head','faculty','it']}>
+          <ProtectedRoute allowedRoles={['academic_head', 'faculty', 'it']}>
             <AppLayout>
               <StudentProfilePage />
             </AppLayout>
@@ -121,7 +144,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/risk"
         element={
-          <ProtectedRoute allowedRoles={['academic_head','faculty','it']}>
+          <ProtectedRoute allowedRoles={['academic_head', 'faculty', 'it']}>
             <AppLayout>
               <RiskPanelPage />
             </AppLayout>
@@ -132,7 +155,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/interventions"
         element={
-          <ProtectedRoute allowedRoles={['academic_head','faculty','it']}>
+          <ProtectedRoute allowedRoles={['academic_head', 'faculty', 'it']}>
             <AppLayout>
               <InterventionsPage />
             </AppLayout>
@@ -165,7 +188,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/support"
         element={
-          <ProtectedRoute allowedRoles={['academic_head','faculty','student']}>
+          <ProtectedRoute allowedRoles={['academic_head', 'faculty', 'student']}>
             <AppLayout>
               <SupportPage />
             </AppLayout>

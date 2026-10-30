@@ -93,7 +93,9 @@ export const StudentsListPage: React.FC = () => {
                       <h3 className="text-xl font-bold text-gray-900 mb-1 dark:text-slate-100">
                         {student.name}
                       </h3>
-                      <p className="text-sm text-gray-500 dark:text-slate-400">{student.roll_number}</p>
+                      <p className="text-sm text-gray-500 dark:text-slate-400">
+                        {student.roll_number}
+                      </p>
                     </div>
                     {student.risk_flag ? (
                       <span className="px-3 py-1 text-xs font-semibold rounded-full bg-gradient-to-r from-orange-500 to-red-500 text-white">
@@ -106,27 +108,33 @@ export const StudentsListPage: React.FC = () => {
                     )}
                   </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600 dark:text-slate-400">Department</span>
-                  <span className="font-medium text-gray-900 dark:text-slate-100">{student.department}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600 dark:text-slate-400">GPA</span>
-                  <span className="font-bold text-lg text-blue-600 dark:text-blue-400">{student.avg_gpa.toFixed(2)}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600 dark:text-slate-400">Attendance</span>
-                  <span className="font-bold text-lg text-purple-600 dark:text-purple-400">{student.avg_attendance.toFixed(1)}%</span>
-                </div>
-              </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600 dark:text-slate-400">Department</span>
+                      <span className="font-medium text-gray-900 dark:text-slate-100">
+                        {student.department}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600 dark:text-slate-400">GPA</span>
+                      <span className="font-bold text-lg text-blue-600 dark:text-blue-400">
+                        {student.avg_gpa.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600 dark:text-slate-400">Attendance</span>
+                      <span className="font-bold text-lg text-purple-600 dark:text-purple-400">
+                        {student.avg_attendance.toFixed(1)}%
+                      </span>
+                    </div>
+                  </div>
 
-              <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-700">
-                <button className="w-full py-2 text-sm font-medium text-mint-600 hover:text-mint-700 transition dark:text-mint-400 dark:hover:text-mint-300">
-                  View Profile →
-                </button>
-              </div>
-            </div>
+                  <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-700">
+                    <button className="w-full py-2 text-sm font-medium text-mint-600 hover:text-mint-700 transition dark:text-mint-400 dark:hover:text-mint-300">
+                      View Profile →
+                    </button>
+                  </div>
+                </div>
               </TiltCard>
             </StaggerItem>
           ))}
@@ -136,7 +144,8 @@ export const StudentsListPage: React.FC = () => {
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 dark:bg-slate-900 dark:border-slate-800 dark:shadow-none">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-sm text-gray-700 dark:text-slate-300">
-              Showing {((page - 1) * limit) + 1} to {Math.min(page * limit, data?.total || 0)} of {data?.total || 0} students
+              Showing {(page - 1) * limit + 1} to {Math.min(page * limit, data?.total || 0)} of{' '}
+              {data?.total || 0} students
             </div>
             <div className="flex space-x-2">
               <button

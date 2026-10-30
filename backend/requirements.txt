@@ -15,6 +15,7 @@ alembic==1.13.1
 # Auth
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
+bcrypt==3.2.2
 
 # ML
 scikit-learn==1.3.2
@@ -23,27 +24,17 @@ pandas==2.1.4
 scipy==1.11.4
 joblib==1.3.2
 
-# Observability & Monitoring
+# Observability
 prometheus-client==0.19.0
 
-# Audit Logging & SIEM
+# Logging
 python-json-logger==2.0.7
-
-# OpenFGA Client
-openfga-sdk==0.4.0
-
-# Keycloak Admin Client
-keycloak-admin-client==26.0.8
 
 # Utilities
 python-dotenv==1.0.0
 httpx==0.26.0
 
-# Redis
-redis==5.0.1
-
 # Testing
 pytest==7.4.4
 pytest-asyncio==0.23.3
 pytest-cov==4.1.0
-httpx==0.26.0

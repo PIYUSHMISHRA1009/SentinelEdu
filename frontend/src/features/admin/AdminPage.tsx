@@ -11,7 +11,12 @@ import type { ApiResponse, Course, Faculty } from '@/api/types';
 import { FadeIn } from '@/components/Motion/FadeIn';
 import { AnimatedCounter } from '@/components/Motion/AnimatedCounter';
 import { StaggerContainer, StaggerItem } from '@/components/Motion/StaggerContainer';
-import { AcademicCapIcon, BookOpenIcon, DocumentArrowUpIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import {
+  AcademicCapIcon,
+  BookOpenIcon,
+  DocumentArrowUpIcon,
+  UserGroupIcon,
+} from '@heroicons/react/24/outline';
 import { AddCourseForm } from './AddCourseForm';
 import { AddFacultyForm } from './AddFacultyForm';
 import { useAuth } from '@/features/auth/AuthProvider';
@@ -49,15 +54,15 @@ export const AdminPage: React.FC = () => {
 
   const totalCredits = useMemo(
     () => (courses || []).reduce((sum, course) => sum + (course.credits || 0), 0),
-    [courses],
+    [courses]
   );
   const departments = useMemo(
     () => new Set((courses || []).map((course) => course.department).filter(Boolean)).size,
-    [courses],
+    [courses]
   );
   const facultyDepartments = useMemo(
     () => new Set((faculty || []).map((member) => member.department).filter(Boolean)).size,
-    [faculty],
+    [faculty]
   );
 
   if (coursesLoading || facultyLoading) {
@@ -72,15 +77,19 @@ export const AdminPage: React.FC = () => {
 
     try {
       setUploading(true);
-      const res = await axiosClient.post<ApiResponse<ImportFeedback>>(API_ENDPOINTS.IMPORT_CSV, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      const res = await axiosClient.post<ApiResponse<ImportFeedback>>(
+        API_ENDPOINTS.IMPORT_CSV,
+        formData,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        }
+      );
       if (res.data.success && res.data.data) {
         const data = res.data.data;
         setImportResult(data);
         addToast(
           `Import complete: ${data.inserted} records inserted, ${data.errors.length} issues detected.`,
-          data.errors.length ? 'warning' : 'success',
+          data.errors.length ? 'warning' : 'success'
         );
         queryClient.invalidateQueries({ queryKey: ['students'] });
       } else {
@@ -101,13 +110,18 @@ export const AdminPage: React.FC = () => {
           <div>
             <h1 className="text-4xl font-bold">Academic Administration</h1>
             <p className="mt-3 max-w-2xl text-sm text-primary-100/90">
-              Govern course offerings, faculty profiles, and bulk student imports with a cohesive, role-aware toolkit.
+              Govern course offerings, faculty profiles, and bulk student imports with a cohesive,
+              role-aware toolkit.
             </p>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <StatCard label="Total Courses" value={courses?.length || 0} icon={BookOpenIcon} />
             <StatCard label="Faculty" value={faculty?.length || 0} icon={UserGroupIcon} />
-            <StatCard label="Departments" value={departments || facultyDepartments || 0} icon={AcademicCapIcon} />
+            <StatCard
+              label="Departments"
+              value={departments || facultyDepartments || 0}
+              icon={AcademicCapIcon}
+            />
           </div>
         </div>
       </section>
@@ -117,7 +131,9 @@ export const AdminPage: React.FC = () => {
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Course Catalogue</h2>
+                <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">
+                  Course Catalogue
+                </h2>
                 <p className="text-sm text-slate-500 dark:text-slate-300">
                   Review course metadata and keep credit loads in sync across departments.
                 </p>
@@ -134,7 +150,10 @@ export const AdminPage: React.FC = () => {
             </div>
             {showAddCourse ? (
               <div className="mt-6">
-                <AddCourseForm onSuccess={() => setShowAddCourse(false)} onCancel={() => setShowAddCourse(false)} />
+                <AddCourseForm
+                  onSuccess={() => setShowAddCourse(false)}
+                  onCancel={() => setShowAddCourse(false)}
+                />
               </div>
             ) : null}
 
@@ -154,16 +173,27 @@ export const AdminPage: React.FC = () => {
                   </thead>
                   <tbody className="divide-y divide-slate-200 bg-white dark:divide-slate-800 dark:bg-slate-900">
                     {courses.map((course) => (
-                      <tr key={course.course_id} className="hover:bg-slate-50 dark:hover:bg-slate-800">
+                      <tr
+                        key={course.course_id}
+                        className="hover:bg-slate-50 dark:hover:bg-slate-800"
+                      >
                         <td className="px-4 py-3">
                           <span className="rounded-full bg-primary-100 px-3 py-1 text-xs font-semibold text-primary-700 dark:bg-primary-700/20 dark:text-primary-200">
                             {course.course_code}
                           </span>
                         </td>
-                        <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">{course.course_name}</td>
-                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">{course.department}</td>
-                        <td className="px-4 py-3 text-lg font-bold text-primary-600 dark:text-primary-300">{course.credits}</td>
-                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">{course.semester ?? '—'}</td>
+                        <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">
+                          {course.course_name}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
+                          {course.department}
+                        </td>
+                        <td className="px-4 py-3 text-lg font-bold text-primary-600 dark:text-primary-300">
+                          {course.credits}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
+                          {course.semester ?? '—'}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -175,7 +205,9 @@ export const AdminPage: React.FC = () => {
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Faculty Directory</h2>
+                <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">
+                  Faculty Directory
+                </h2>
                 <p className="text-sm text-slate-500 dark:text-slate-300">
                   Highlight faculty presence and maintain department ownership.
                 </p>
@@ -193,7 +225,10 @@ export const AdminPage: React.FC = () => {
 
             {showAddFaculty ? (
               <div className="mt-6">
-                <AddFacultyForm onSuccess={() => setShowAddFaculty(false)} onCancel={() => setShowAddFaculty(false)} />
+                <AddFacultyForm
+                  onSuccess={() => setShowAddFaculty(false)}
+                  onCancel={() => setShowAddFaculty(false)}
+                />
               </div>
             ) : null}
 
@@ -206,15 +241,21 @@ export const AdminPage: React.FC = () => {
                     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md dark:border-slate-700 dark:bg-slate-800">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{member.name}</h3>
-                          <p className="mt-1 text-sm text-slate-500 dark:text-slate-300">{member.email}</p>
+                          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                            {member.name}
+                          </h3>
+                          <p className="mt-1 text-sm text-slate-500 dark:text-slate-300">
+                            {member.email}
+                          </p>
                         </div>
                         <span className="rounded-full bg-primary-100 px-3 py-1 text-xs font-semibold text-primary-700 dark:bg-primary-700/20 dark:text-primary-200">
                           {formatRole(member.role)}
                         </span>
                       </div>
                       {member.department ? (
-                        <p className="mt-3 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{member.department}</p>
+                        <p className="mt-3 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                          {member.department}
+                        </p>
                       ) : null}
                     </div>
                   </StaggerItem>
@@ -231,14 +272,18 @@ export const AdminPage: React.FC = () => {
                 <AcademicCapIcon className="h-6 w-6" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Credit Snapshot</h2>
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+                  Credit Snapshot
+                </h2>
                 <p className="text-sm text-slate-500 dark:text-slate-300">
                   Aggregate credits across the current course list.
                 </p>
               </div>
             </div>
             <div className="mt-6 rounded-2xl border border-primary-200 bg-primary-50 px-5 py-6 text-center dark:border-primary-700/40 dark:bg-primary-700/10">
-              <div className="text-sm font-semibold uppercase tracking-wide text-primary-600 dark:text-primary-200">Total Credits</div>
+              <div className="text-sm font-semibold uppercase tracking-wide text-primary-600 dark:text-primary-200">
+                Total Credits
+              </div>
               <div className="mt-2 text-4xl font-bold text-primary-700 dark:text-primary-100">
                 <AnimatedCounter value={totalCredits} />
               </div>
@@ -268,8 +313,12 @@ export const AdminPage: React.FC = () => {
               className="mt-6 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center transition hover:border-primary-400 hover:bg-primary-50 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-primary-600 dark:hover:bg-primary-900/20"
             >
               <DocumentArrowUpIcon className="h-12 w-12 text-slate-400" />
-              <span className="mt-3 text-sm font-semibold text-slate-700 dark:text-slate-200">Drop CSV or browse files</span>
-              <span className="mt-1 text-xs text-slate-500 dark:text-slate-300">Accepted format: .csv (UTF-8)</span>
+              <span className="mt-3 text-sm font-semibold text-slate-700 dark:text-slate-200">
+                Drop CSV or browse files
+              </span>
+              <span className="mt-1 text-xs text-slate-500 dark:text-slate-300">
+                Accepted format: .csv (UTF-8)
+              </span>
               <input
                 id="csv-upload"
                 type="file"
@@ -306,16 +355,23 @@ export const AdminPage: React.FC = () => {
               <div className="mt-4 rounded-xl border border-primary-200 bg-primary-50 p-4 text-sm text-primary-700 dark:border-primary-700/40 dark:bg-primary-700/10 dark:text-primary-200">
                 <p>
                   Inserted <strong>{importResult.inserted}</strong> records with{' '}
-                  <strong>{importResult.errors.length}</strong> validation issue{importResult.errors.length === 1 ? '' : 's'}.
+                  <strong>{importResult.errors.length}</strong> validation issue
+                  {importResult.errors.length === 1 ? '' : 's'}.
                 </p>
                 {importResult.errors.length ? (
                   <details className="mt-2">
-                    <summary className="cursor-pointer text-xs font-semibold">View sample errors</summary>
+                    <summary className="cursor-pointer text-xs font-semibold">
+                      View sample errors
+                    </summary>
                     <ul className="mt-2 space-y-1 text-xs">
                       {importResult.errors.slice(0, 8).map((error, index) => (
-                        <li key={`${error.row}-${index}`}>Row {error.row}: {error.message}</li>
+                        <li key={`${error.row}-${index}`}>
+                          Row {error.row}: {error.message}
+                        </li>
                       ))}
-                      {importResult.errors.length > 8 ? <li>and {importResult.errors.length - 8} more</li> : null}
+                      {importResult.errors.length > 8 ? (
+                        <li>and {importResult.errors.length - 8} more</li>
+                      ) : null}
                     </ul>
                   </details>
                 ) : null}
@@ -328,11 +384,11 @@ export const AdminPage: React.FC = () => {
   );
 };
 
-const StatCard: React.FC<{ label: string; value: number; icon: React.ComponentType<{ className?: string }> }> = ({
-  label,
-  value,
-  icon: Icon,
-}) => (
+const StatCard: React.FC<{
+  label: string;
+  value: number;
+  icon: React.ComponentType<{ className?: string }>;
+}> = ({ label, value, icon: Icon }) => (
   <div className="flex items-center gap-3 rounded-2xl border border-primary-400/40 bg-primary-600/30 px-4 py-3 text-white shadow-inner">
     <div className="rounded-lg bg-white/20 p-2">
       <Icon className="h-5 w-5" />

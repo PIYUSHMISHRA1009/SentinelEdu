@@ -76,12 +76,12 @@ export const LoginPage: React.FC = () => {
       // Check if response is successful
       if (response.data.success && response.data.data) {
         const { token, role, user } = response.data.data;
-        
+
         // Convert user object if needed
         const userObj: any = typeof user === 'object' ? user : { username: data.username };
-        
+
         login(token, userObj, role as any);
-        
+
         // Force navigation after a brief delay to ensure state updates
         setTimeout(() => {
           navigate('/dashboard', { replace: true });
@@ -91,16 +91,19 @@ export const LoginPage: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Login error:', error);
-      
+
       // Better error handling
       if (error.response) {
         // Server responded with error status
-        const errorMsg = error.response.data?.message || error.response.data?.error || 'Invalid credentials';
+        const errorMsg =
+          error.response.data?.message || error.response.data?.error || 'Invalid credentials';
         setErrorMessage(errorMsg);
       } else if (error.request) {
         // Request made but no response
-  const base = axiosClient.defaults.baseURL || 'http://localhost:8081/api';
-        setErrorMessage(`Cannot connect to server at ${base}. Please ensure the backend is running and reachable.`);
+        const base = axiosClient.defaults.baseURL || 'http://localhost:8081/api';
+        setErrorMessage(
+          `Cannot connect to server at ${base}. Please ensure the backend is running and reachable.`
+        );
       } else {
         // Other errors
         setErrorMessage(error.message || 'Login failed. Please try again.');
@@ -123,24 +126,19 @@ export const LoginPage: React.FC = () => {
     <div className="min-h-screen bg-navy-950 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Animated background */}
       <AnimatedGradient />
-      
+
       {/* Floating decoration elements */}
       <div className="absolute top-10 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
       <div className="absolute bottom-10 right-10 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
 
       <FadeIn className="w-full max-w-6xl mx-auto relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-          
           {/* Left: Login Form */}
           <div className="order-2 lg:order-1">
             <GlassCard intensity="medium" className="p-8 lg:p-10">
               <div className="mb-8">
-                <h1 className="text-4xl lg:text-5xl font-bold text-white mb-3">
-                  Welcome back
-                </h1>
-                <p className="text-gray-300 text-lg">
-                  Sign in to access your dashboard
-                </p>
+                <h1 className="text-4xl lg:text-5xl font-bold text-white mb-3">Welcome back</h1>
+                <p className="text-gray-300 text-lg">Sign in to access your dashboard</p>
               </div>
 
               {errorMessage && (
@@ -154,13 +152,21 @@ export const LoginPage: React.FC = () => {
 
               {apiStatus === 'fail' && (
                 <div className="mb-6 p-3 bg-yellow-500/10 border border-yellow-500/40 rounded-xl text-yellow-200 text-sm">
-                  Cannot reach API at <span className="font-mono">{axiosClient.defaults.baseURL || 'N/A'}</span>. Ensure the backend is running and VITE_API_BASE_URL matches your server (e.g., http://localhost:8080/api). If you use a different port/host, create <span className="font-mono">frontend/.env.development.local</span> with <span className="font-mono">VITE_API_BASE_URL</span>.
+                  Cannot reach API at{' '}
+                  <span className="font-mono">{axiosClient.defaults.baseURL || 'N/A'}</span>. Ensure
+                  the backend is running and VITE_API_BASE_URL matches your server (e.g.,
+                  http://localhost:8080/api). If you use a different port/host, create{' '}
+                  <span className="font-mono">frontend/.env.development.local</span> with{' '}
+                  <span className="font-mono">VITE_API_BASE_URL</span>.
                 </div>
               )}
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 <div>
-                  <label htmlFor="username" className="text-sm font-medium text-gray-200 block mb-2">
+                  <label
+                    htmlFor="username"
+                    className="text-sm font-medium text-gray-200 block mb-2"
+                  >
                     Username
                   </label>
                   <input
@@ -179,7 +185,10 @@ export const LoginPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="password" className="text-sm font-medium text-gray-200 block mb-2">
+                  <label
+                    htmlFor="password"
+                    className="text-sm font-medium text-gray-200 block mb-2"
+                  >
                     Password
                   </label>
                   <input
@@ -199,7 +208,10 @@ export const LoginPage: React.FC = () => {
 
                 <div className="flex items-center justify-between pt-2">
                   <label className="flex items-center text-sm text-gray-300 cursor-pointer">
-                    <input type="checkbox" className="mr-2 rounded border-gray-600 text-mint-500 focus:ring-mint-500" />
+                    <input
+                      type="checkbox"
+                      className="mr-2 rounded border-gray-600 text-mint-500 focus:ring-mint-500"
+                    />
                     Remember me
                   </label>
                   <button
@@ -285,7 +297,8 @@ export const LoginPage: React.FC = () => {
             <div className="space-y-8">
               <div>
                 <h2 className="text-5xl lg:text-6xl font-extrabold mb-4 leading-tight">
-                  Track student success<br />
+                  Track student success
+                  <br />
                   <span className="bg-gradient-to-r from-mint-400 to-cyan-400 bg-clip-text text-transparent">
                     with confidence
                   </span>
@@ -339,7 +352,6 @@ export const LoginPage: React.FC = () => {
               </div>
             </div>
           </div>
-
         </div>
       </FadeIn>
     </div>

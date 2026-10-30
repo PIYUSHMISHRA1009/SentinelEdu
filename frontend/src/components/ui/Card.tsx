@@ -39,25 +39,11 @@ const paddings = {
 };
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(
-  (
-    {
-      variant = 'default',
-      padding = 'md',
-      className = '',
-      children,
-      ...props
-    },
-    ref
-  ) => {
+  ({ variant = 'default', padding = 'md', className = '', children, ...props }, ref) => {
     return (
       <div
         ref={ref}
-        className={clsx(
-          baseStyles,
-          variants[variant],
-          paddings[padding],
-          className
-        )}
+        className={clsx(baseStyles, variants[variant], paddings[padding], className)}
         {...props}
       >
         {children}
@@ -71,11 +57,7 @@ Card.displayName = 'Card';
 export interface CardHeaderProps extends HTMLAttributes<HTMLDivElement> {}
 export const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
   ({ className = '', children, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={clsx('mb-4', className)}
-      {...props}
-    >
+    <div ref={ref} className={clsx('mb-4', className)} {...props}>
       {children}
     </div>
   )
@@ -85,11 +67,7 @@ CardHeader.displayName = 'CardHeader';
 export interface CardTitleProps extends HTMLAttributes<HTMLHeadingElement> {}
 export const CardTitle = forwardRef<HTMLHeadingElement, CardTitleProps>(
   ({ className = '', children, ...props }, ref) => (
-    <h3
-      ref={ref}
-      className={clsx('text-xl font-bold text-slate-50', className)}
-      {...props}
-    >
+    <h3 ref={ref} className={clsx('text-xl font-bold text-slate-50', className)} {...props}>
       {children}
     </h3>
   )
@@ -99,11 +77,7 @@ CardTitle.displayName = 'CardTitle';
 export interface CardDescriptionProps extends HTMLAttributes<HTMLParagraphElement> {}
 export const CardDescription = forwardRef<HTMLParagraphElement, CardDescriptionProps>(
   ({ className = '', children, ...props }, ref) => (
-    <p
-      ref={ref}
-      className={clsx('text-slate-400 text-sm mt-1', className)}
-      {...props}
-    >
+    <p ref={ref} className={clsx('text-slate-400 text-sm mt-1', className)} {...props}>
       {children}
     </p>
   )
@@ -113,11 +87,7 @@ CardDescription.displayName = 'CardDescription';
 export interface CardContentProps extends HTMLAttributes<HTMLDivElement> {}
 export const CardContent = forwardRef<HTMLDivElement, CardContentProps>(
   ({ className = '', children, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={clsx('', className)}
-      {...props}
-    >
+    <div ref={ref} className={clsx('', className)} {...props}>
       {children}
     </div>
   )

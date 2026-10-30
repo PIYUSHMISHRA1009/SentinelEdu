@@ -12,13 +12,13 @@ import { TiltCard } from '@/components/Motion/TiltCard';
 import { MagneticButton } from '@/components/Motion/MagneticButton';
 import { AnimatedGradient } from '@/components/Motion/AnimatedGradient';
 import { ScrollReveal } from '@/components/Motion/ScrollReveal';
-import { 
-  AcademicCapIcon, 
-  ChartBarIcon, 
+import {
+  AcademicCapIcon,
+  ChartBarIcon,
   ExclamationTriangleIcon,
   UserGroupIcon,
   BellAlertIcon,
-  DocumentTextIcon
+  DocumentTextIcon,
 } from '@heroicons/react/24/outline';
 
 export const HomePage: React.FC = () => {
@@ -35,13 +35,14 @@ export const HomePage: React.FC = () => {
   const features = [
     {
       title: 'Student Analytics',
-      description: 'Track performance, attendance, and engagement across all courses and semesters.',
+      description:
+        'Track performance, attendance, and engagement across all courses and semesters.',
       icon: ChartBarIcon,
       gradient: 'from-blue-500 to-cyan-500',
     },
     {
       title: 'Risk Detection',
-      description: 'Early warning system flags students at risk before it\'s too late.',
+      description: "Early warning system flags students at risk before it's too late.",
       icon: ExclamationTriangleIcon,
       gradient: 'from-orange-500 to-red-500',
     },
@@ -78,17 +79,22 @@ export const HomePage: React.FC = () => {
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-navy-900 via-navy-800 to-navy-900">
         <AnimatedGradient />
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
           <FadeIn>
             <div className="text-center">
               <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight">
-                The all-in-one platform<br />
-                for <span className="bg-gradient-to-r from-mint-400 to-cyan-400 bg-clip-text text-transparent">student success</span>
+                The all-in-one platform
+                <br />
+                for{' '}
+                <span className="bg-gradient-to-r from-mint-400 to-cyan-400 bg-clip-text text-transparent">
+                  student success
+                </span>
               </h1>
-              
+
               <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
-                Build a better learning environment with analytics, risk detection, and interventions — all under your own brand.
+                Build a better learning environment with analytics, risk detection, and
+                interventions — all under your own brand.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -136,10 +142,13 @@ export const HomePage: React.FC = () => {
           <ScrollReveal>
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                Powerful features for<br />student success teams
+                Powerful features for
+                <br />
+                student success teams
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Everything you need to identify, support, and track at-risk students in one platform.
+                Everything you need to identify, support, and track at-risk students in one
+                platform.
               </p>
             </div>
           </ScrollReveal>
@@ -149,14 +158,18 @@ export const HomePage: React.FC = () => {
               <StaggerItem key={feature.title}>
                 <TiltCard className="h-full">
                   <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 p-8 hover:shadow-2xl transition-all h-full">
-                    <div className={`inline-flex p-3 rounded-xl bg-gradient-to-r ${feature.gradient} mb-4`}>
+                    <div
+                      className={`inline-flex p-3 rounded-xl bg-gradient-to-r ${feature.gradient} mb-4`}
+                    >
                       <feature.icon className="h-8 w-8 text-white" />
                     </div>
-                    
+
                     <h3 className="text-2xl font-bold text-gray-900 mb-3">{feature.title}</h3>
                     <p className="text-gray-600 leading-relaxed">{feature.description}</p>
 
-                    <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${feature.gradient} transform scale-x-0 group-hover:scale-x-100 transition-transform`}></div>
+                    <div
+                      className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${feature.gradient} transform scale-x-0 group-hover:scale-x-100 transition-transform`}
+                    ></div>
                   </div>
                 </TiltCard>
               </StaggerItem>
@@ -197,9 +210,15 @@ export const HomePage: React.FC = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-gray-400">
             <p>© {currentYear} InsightFlow EDU. All rights reserved.</p>
             <div className="flex items-center gap-6">
-              <Link to="/contact" className="hover:text-mint-300">Contact Us</Link>
-              <Link to="/terms" className="hover:text-mint-300">Terms of Service</Link>
-              <Link to="/privacy" className="hover:text-mint-300">Privacy Policy</Link>
+              <Link to="/contact" className="hover:text-mint-300">
+                Contact Us
+              </Link>
+              <Link to="/terms" className="hover:text-mint-300">
+                Terms of Service
+              </Link>
+              <Link to="/privacy" className="hover:text-mint-300">
+                Privacy Policy
+              </Link>
             </div>
           </div>
         </div>

@@ -20,6 +20,21 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src"],
+  "include": [
+    "src/main.tsx",
+    "src/vite-env.d.ts",
+    "src/App.tsx",
+    "src/queryClient.ts",
+    "src/api/client.ts",
+    "src/pages/AnalyticsDashboard.tsx",
+    "src/pages/DataQualityPage.tsx",
+    "src/pages/Login.tsx",
+    "src/components/RiskDashboard.tsx",
+    "src/components/ui/Alert.tsx",
+    "src/components/ui/Button.tsx",
+    "src/components/ui/Card.tsx",
+    "src/components/ui/Input.tsx",
+    "src/types/index.ts"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

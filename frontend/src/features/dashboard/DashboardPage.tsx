@@ -14,8 +14,19 @@ import { Loading } from '@/components/Loading';
 import { GpaChart } from './GpaChart';
 import { AttendanceChart } from './AttendanceChart';
 import { RiskSummaryWidget } from './RiskSummaryWidget';
-import type { ApiResponse, DashboardStats, GpaTrend, AttendanceTrend, RiskSummaryResponse } from '@/api/types';
-import { AcademicCapIcon, UserGroupIcon, ExclamationTriangleIcon, ChartBarIcon } from '@heroicons/react/24/outline';
+import type {
+  ApiResponse,
+  DashboardStats,
+  GpaTrend,
+  AttendanceTrend,
+  RiskSummaryResponse,
+} from '@/api/types';
+import {
+  AcademicCapIcon,
+  UserGroupIcon,
+  ExclamationTriangleIcon,
+  ChartBarIcon,
+} from '@heroicons/react/24/outline';
 
 /**
  * Main dashboard component with KPI cards, filters, and visualization widgets
@@ -29,12 +40,15 @@ export const DashboardPage: React.FC = () => {
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ['dashboard-stats', semester, department],
     queryFn: async () => {
-      const response = await axiosClient.get<ApiResponse<DashboardStats>>(API_ENDPOINTS.DASHBOARD_STATS, {
-        params: {
-          semester: semester || undefined,
-          department: department || undefined,
-        },
-      });
+      const response = await axiosClient.get<ApiResponse<DashboardStats>>(
+        API_ENDPOINTS.DASHBOARD_STATS,
+        {
+          params: {
+            semester: semester || undefined,
+            department: department || undefined,
+          },
+        }
+      );
       return response.data.data;
     },
   });
@@ -43,9 +57,12 @@ export const DashboardPage: React.FC = () => {
   const { data: gpaTrends, isLoading: gpaLoading } = useQuery({
     queryKey: ['gpa-trends', semester, department],
     queryFn: async () => {
-      const response = await axiosClient.get<ApiResponse<any[]>>(API_ENDPOINTS.DASHBOARD_GPA_TREND, {
-        params: { department: department || undefined },
-      });
+      const response = await axiosClient.get<ApiResponse<any[]>>(
+        API_ENDPOINTS.DASHBOARD_GPA_TREND,
+        {
+          params: { department: department || undefined },
+        }
+      );
       // Backend returns snake_case keys; map to chart-friendly camelCase
       const raw = response.data.data || [];
       return raw.map((r: any) => ({
@@ -59,9 +76,12 @@ export const DashboardPage: React.FC = () => {
   const { data: attendanceTrends, isLoading: attendanceLoading } = useQuery({
     queryKey: ['attendance-trends', semester, department],
     queryFn: async () => {
-      const response = await axiosClient.get<ApiResponse<any[]>>(API_ENDPOINTS.DASHBOARD_ATTENDANCE_TREND, {
-        params: { department: department || undefined },
-      });
+      const response = await axiosClient.get<ApiResponse<any[]>>(
+        API_ENDPOINTS.DASHBOARD_ATTENDANCE_TREND,
+        {
+          params: { department: department || undefined },
+        }
+      );
       const raw = response.data.data || [];
       return raw.map((r: any) => ({
         month: r.month,
@@ -74,9 +94,12 @@ export const DashboardPage: React.FC = () => {
   const { data: riskSummary, isLoading: riskLoading } = useQuery({
     queryKey: ['risk-summary'],
     queryFn: async () => {
-      const response = await axiosClient.get<ApiResponse<RiskSummaryResponse>>(API_ENDPOINTS.DASHBOARD_RISK_SUMMARY, {
-        params: { department: department || undefined },
-      });
+      const response = await axiosClient.get<ApiResponse<RiskSummaryResponse>>(
+        API_ENDPOINTS.DASHBOARD_RISK_SUMMARY,
+        {
+          params: { department: department || undefined },
+        }
+      );
       // Extract the by_reason array from the response
       return response.data.data?.by_reason || [];
     },
@@ -96,7 +119,9 @@ export const DashboardPage: React.FC = () => {
       es.addEventListener('message', onAny);
       es.onerror = () => {};
       return () => {
-        try { es.close(); } catch {}
+        try {
+          es.close();
+        } catch {}
       };
     } catch {
       // Ignore when EventSource is not available (tests/older browsers)
@@ -122,7 +147,10 @@ export const DashboardPage: React.FC = () => {
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 dark:bg-slate-900 dark:border-slate-800">
           <div className="flex flex-wrap gap-4">
             <div>
-              <label htmlFor="semester" className="block text-sm font-medium text-gray-700 mb-2 dark:text-slate-300">
+              <label
+                htmlFor="semester"
+                className="block text-sm font-medium text-gray-700 mb-2 dark:text-slate-300"
+              >
                 Semester
               </label>
               <select
@@ -142,7 +170,10 @@ export const DashboardPage: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="department" className="block text-sm font-medium text-gray-700 mb-2 dark:text-slate-300">
+              <label
+                htmlFor="department"
+                className="block text-sm font-medium text-gray-700 mb-2 dark:text-slate-300"
+              >
                 Department
               </label>
               <select
@@ -222,7 +253,9 @@ export const DashboardPage: React.FC = () => {
         {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 dark:bg-slate-900 dark:border-slate-800">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-slate-100">GPA Trend</h3>
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-slate-100">
+              GPA Trend
+            </h3>
             {gpaLoading ? (
               <Loading message="Loading chart..." />
             ) : (
@@ -231,7 +264,9 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 dark:bg-slate-900 dark:border-slate-800">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-slate-100">Attendance Trend</h3>
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-slate-100">
+              Attendance Trend
+            </h3>
             {attendanceLoading ? (
               <Loading message="Loading chart..." />
             ) : (
@@ -242,7 +277,9 @@ export const DashboardPage: React.FC = () => {
 
         {/* Risk Summary */}
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 dark:bg-slate-900 dark:border-slate-800">
-          <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-slate-100">Risk Summary by Reason</h3>
+          <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-slate-100">
+            Risk Summary by Reason
+          </h3>
           {riskLoading ? (
             <Loading message="Loading risk data..." />
           ) : (
