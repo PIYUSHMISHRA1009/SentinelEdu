@@ -264,10 +264,13 @@ jobs:
         run: |
           echo "Security Scan Summary"
           echo "====================="
-          for job in trivy-scan trufflehog-scan dependency-scan sast-scan iac-scan sbom policy-check; do
-            status=$(echo "${{ needs.$job.result }}" | tr '[:upper:]' '[:lower:]')
-            echo "$job: $status"
-          done
+          echo "trivy-scan: ${{ needs.trivy-scan.result }}"
+          echo "trufflehog-scan: ${{ needs.trufflehog-scan.result }}"
+          echo "dependency-scan: ${{ needs.dependency-scan.result }}"
+          echo "sast-scan: ${{ needs.sast-scan.result }}"
+          echo "iac-scan: ${{ needs.iac-scan.result }}"
+          echo "sbom: ${{ needs.sbom.result }}"
+          echo "policy-check: ${{ needs.policy-check.result }}"
 
       - name: Create GitHub Security Advisory (if critical found)
         if: ${{ contains(needs.*.result, 'failure') }}

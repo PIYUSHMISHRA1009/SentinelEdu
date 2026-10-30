@@ -427,10 +427,16 @@ jobs:
         run: |
           echo "CI Pipeline Summary"
           echo "==================="
-          for job in backend-lint backend-test backend-build frontend-lint frontend-test frontend-build security-trivy security-trufflehog security-dependency-check integration-tests; do
-            status=$(echo "${{ needs.$job.result }}" | tr '[:upper:]' '[:lower:]')
-            echo "$job: $status"
-          done
+          echo "backend-lint: ${{ needs.backend-lint.result }}"
+          echo "backend-test: ${{ needs.backend-test.result }}"
+          echo "backend-build: ${{ needs.backend-build.result }}"
+          echo "frontend-lint: ${{ needs.frontend-lint.result }}"
+          echo "frontend-test: ${{ needs.frontend-test.result }}"
+          echo "frontend-build: ${{ needs.frontend-build.result }}"
+          echo "security-trivy: ${{ needs.security-trivy.result }}"
+          echo "security-trufflehog: ${{ needs.security-trufflehog.result }}"
+          echo "security-dependency-check: ${{ needs.security-dependency-check.result }}"
+          echo "integration-tests: ${{ needs.integration-tests.result }}"
 
       - name: Fail if any job failed
         if: ${{ contains(needs.*.result, 'failure') }}
