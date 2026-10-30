@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 
 // Polyfill ResizeObserver for components (e.g., Recharts) under jsdom
 // jsdom does not implement ResizeObserver; providing a minimal stub fixes tests that mount responsive charts
@@ -11,8 +12,8 @@ class ResizeObserverStub {
 global.ResizeObserver = global.ResizeObserver || ResizeObserverStub as any;
 
 // Mock framer-motion to avoid requiring React's JSX runtime in tests and simplify motion components
-jest.mock('framer-motion', () => {
-	const React = require('react');
+vi.mock('framer-motion', async () => {
+	const React = await import('react');
 	const passthrough = (tag = 'div') =>
 		React.forwardRef(function FMStub(props: any, ref: any) {
 			return React.createElement(tag, { ...props, ref }, props.children);
