@@ -206,6 +206,9 @@ jobs:
   security-summary:
     name: Security Summary
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
     needs:
       - trivy-scan
       - trufflehog-scan
@@ -228,6 +231,7 @@ jobs:
 
       - name: Create GitHub Security Advisory (if critical found)
         if: ${{ contains(needs.*.result, 'failure') }}
+        continue-on-error: true
         uses: actions/github-script@v7
         with:
           script: |
