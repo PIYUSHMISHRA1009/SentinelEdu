@@ -276,8 +276,9 @@ jobs:
       - name: Compute lowercase image refs
         run: |
           IMAGE_REPOSITORY="$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')"
-          echo "BACKEND_IMAGE_REF=ghcr.io/${IMAGE_REPOSITORY}/backend:${{ github.sha }}" >> "$GITHUB_ENV"
-          echo "FRONTEND_IMAGE_REF=ghcr.io/${IMAGE_REPOSITORY}/frontend:${{ github.sha }}" >> "$GITHUB_ENV"
+          IMAGE_TAG="${GITHUB_SHA::7}"
+          echo "BACKEND_IMAGE_REF=ghcr.io/${IMAGE_REPOSITORY}/backend:${IMAGE_TAG}" >> "$GITHUB_ENV"
+          echo "FRONTEND_IMAGE_REF=ghcr.io/${IMAGE_REPOSITORY}/frontend:${IMAGE_TAG}" >> "$GITHUB_ENV"
 
       - name: Run Trivy vulnerability scanner (backend)
         uses: aquasecurity/trivy-action@master
@@ -392,8 +393,9 @@ jobs:
       - name: Compute lowercase image refs
         run: |
           IMAGE_REPOSITORY="$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')"
-          echo "BACKEND_IMAGE_REF=ghcr.io/${IMAGE_REPOSITORY}/backend:${{ github.sha }}" >> "$GITHUB_ENV"
-          echo "FRONTEND_IMAGE_REF=ghcr.io/${IMAGE_REPOSITORY}/frontend:${{ github.sha }}" >> "$GITHUB_ENV"
+          IMAGE_TAG="${GITHUB_SHA::7}"
+          echo "BACKEND_IMAGE_REF=ghcr.io/${IMAGE_REPOSITORY}/backend:${IMAGE_TAG}" >> "$GITHUB_ENV"
+          echo "FRONTEND_IMAGE_REF=ghcr.io/${IMAGE_REPOSITORY}/frontend:${IMAGE_TAG}" >> "$GITHUB_ENV"
 
       - name: Log in to Container Registry
         uses: docker/login-action@v3
